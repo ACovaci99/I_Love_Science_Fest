@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 import random
+import PIL
+from PIL import Image
 
 
 def count_value_in_kernel2(matrix, radius):
@@ -32,8 +34,6 @@ def count_value_in_kernel2(matrix, radius):
     counter=0
 
     for r in range(kernel_start, kernel_end_row):
-        print(counter)
-        counter=counter+1
         for c in range(kernel_start, kernel_end_col):
           # big kernel
           rows_needed = get_integers_within_distance(r, radius)
@@ -156,8 +156,6 @@ def create_green_to_blue_cmap():
 cmap = create_green_to_blue_cmap()
 
 
-from PIL import Image
-import numpy as np
 
 def png_to_matrix(image_path):
     image = Image.open(image_path)
@@ -176,8 +174,3 @@ def png_to_matrix(image_path):
                 matrix[y, x] = 3    # Black
     return matrix
 
-
-# Example usage
-image_path = "/content/gent_small.png"  # Replace with your PNG image path
-matrix = png_to_matrix(image_path)
-print(matrix)
