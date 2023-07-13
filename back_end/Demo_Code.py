@@ -7,12 +7,25 @@ Created on Mon Jul 10 10:19:16 2023
 import functions
 import matplotlib.pyplot as plt
 import time
-
+import pandas as pd
+import numpy as np
+import joblib
 # Start the timer
+import os
 start_time = time.time()
 
+current_directory = os.getcwd()
+
+# Print the current directory
+print(f"Current directory: {current_directory}")
+
+subdirectory_name = "plots"
+
+# Create the path to the subdirectory
+subdirectory_path = os.path.join(current_directory, subdirectory_name)
+
 # Example usage
-image_path = "D:/github/I_Love_Science_Fest/back_end/plots/test_small.jpg"  # Replace with your PNG image path
+image_path = os.path.join(subdirectory_path , "test_small.jpg")  # Replace with your PNG image path
 matrix = functions.png_to_matrix(image_path)   
 print(matrix)
 cmap=functions.create_green_to_blue_cmap()
@@ -23,8 +36,7 @@ fracs = functions.count_value_in_kernel2(matrix, 40)
 
 
 #%%
-import pandas as pd
-import numpy as np
+
 
 rows = 100 
 cols = 100
@@ -46,7 +58,7 @@ df_reff.GREEN = 1.0
 df_reff['Station']= 'vlinder05'
 
 time_='2020-09-15 01:00:00'
-df_vlinder = pd.read_csv('D:/github/I_Love_Science_Fest/back_end/plots/big_2020_09.csv' )
+df_vlinder = pd.read_csv(os.path.join(subdirectory_path,'big_2020_09.csv' ))
 df_vlinder=df_vlinder.rename(columns={"short_wave_from_sky_1hour":"SHORT_WAVE_FROM_SKY_1HOUR","net_radiation_1hour":"NET_RADIATION_1HOUR"})
 df_vlinder=df_vlinder[df_vlinder['Vlinder']=='vlinder05']
 df_vlinder=df_vlinder[df_vlinder['datetime']==time_]
@@ -57,21 +69,20 @@ df=df.merge(df_vlinder,how='left',left_on='Station',  right_on='Vlinder')
 df_reff=df_reff.merge(df_vlinder,how='left',left_on='Station',  right_on='Vlinder')
 df=df[col_to_keep]
 df_reff=df_reff[col_to_keep]
-import os
-import joblib
 
-model = joblib.load("D:/github/I_Love_Science_Fest/back_end/plots/random_forest.joblib")
+
+
+model = joblib.load(os.path.join(subdirectory_path, "random_forest.joblib"))
 temp=model.predict(df)
 
 T_reff=model.predict(df_reff)
 arr = np.array(temp)
 arr= arr - T_reff
-#arr = np.array(temp)
 xd=np.reshape(arr,(rows,cols))
 plt.figure()
 functions.plot_heatmap(xd, 'cubehelix',vmin=0, vmax=6)
 plt.title('Urban Heat Island Intensity Ghent at t= 01 h')
-plt.savefig('D:/github/I_Love_Science_Fest/back_end/plots/output.png', format='png')
+plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
 plt.show()
 
 end_time = time.time()
