@@ -16,8 +16,6 @@ start_time = time.time()
 
 current_directory = os.getcwd()
 
-# Print the current directory
-print(f"Current directory: {current_directory}")
 
 subdirectory_name = "plots"
 
@@ -27,11 +25,10 @@ subdirectory_path = os.path.join(current_directory, subdirectory_name)
 # Example usage
 image_path = os.path.join(subdirectory_path , "test_small.jpg")  # Replace with your PNG image path
 matrix = functions.png_to_matrix(image_path)   
-print(matrix)
-cmap=functions.create_green_to_blue_cmap()
-plt.figure()
-functions.plot_heatmap(matrix, cmap, vmin=1, vmax=3)
-plt.show()
+#cmap=functions.create_green_to_blue_cmap()
+#plt.figure()
+#functions.plot_heatmap(matrix, cmap, vmin=1, vmax=3)
+#plt.show()
 fracs = functions.count_value_in_kernel2(matrix, 40)
 
 
