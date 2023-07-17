@@ -12,6 +12,8 @@ import numpy as np
 import joblib
 # Start the timer
 import os
+
+from PIL import Image
 start_time = time.time()
 
 current_directory = os.getcwd()
@@ -33,10 +35,11 @@ fracs = functions.count_value_in_kernel2(matrix, 40)
 
 
 #%%
+image = Image.open(image_path)
+width, height = image.size
 
-
-rows = 10 
-cols = 10
+rows = height 
+cols = width
 
 col_to_keep = ['ALT', 'WATER', 'GREEN', 'IMPERVIOUS', 'WATER_1000', 'GREEN_1000',
        'IMPERVIOUS_1000', 'SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
