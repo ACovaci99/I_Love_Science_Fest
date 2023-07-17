@@ -23,7 +23,7 @@ subdirectory_name = "plots"
 subdirectory_path = os.path.join(current_directory, subdirectory_name)
 
 # Example usage
-image_path = os.path.join(subdirectory_path , "test_small.jpg")  # Replace with your PNG image path
+image_path = os.path.join(subdirectory_path , "test_smallv2.jpg")  # Replace with your PNG image path
 matrix = functions.png_to_matrix(image_path)   
 #cmap=functions.create_green_to_blue_cmap()
 #plt.figure()
@@ -35,8 +35,8 @@ fracs = functions.count_value_in_kernel2(matrix, 40)
 #%%
 
 
-rows = 100 
-cols = 100
+rows = 10 
+cols = 10
 
 col_to_keep = ['ALT', 'WATER', 'GREEN', 'IMPERVIOUS', 'WATER_1000', 'GREEN_1000',
        'IMPERVIOUS_1000', 'SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
@@ -80,7 +80,8 @@ plt.figure()
 functions.plot_heatmap(xd, 'cubehelix',vmin=0, vmax=6)
 plt.title('Urban Heat Island Intensity Ghent at t= 01 h')
 plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
-plt.show()
+#plt.show()
+plt.close()
 
 end_time = time.time()
 
