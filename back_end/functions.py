@@ -12,7 +12,7 @@ import random
 
 
 def count_value_in_kernel2(matrix, radius):
-    radius = 20 #my choice 1000 m
+    #radius = 20 #my choice 1000 m
     matrix = pad_matrix(matrix, radius)
     rows = len(matrix)
     cols = len(matrix[0])
@@ -29,11 +29,8 @@ def count_value_in_kernel2(matrix, radius):
     sub_rad = int(radius / 5) #250 m
     sub_kernel = generate_circle_kernel(sub_rad)
     kernel_sub_area = (1+sub_rad*2)*(1+sub_rad*2)
-    counter=0
 
     for r in range(kernel_start, kernel_end_row):
-        print(counter)
-        counter=counter+1
         for c in range(kernel_start, kernel_end_col):
           # big kernel
           rows_needed = get_integers_within_distance(r, radius)
@@ -168,16 +165,72 @@ def png_to_matrix(image_path):
     for y in range(height):
         for x in range(width):
             r, g, b = rgb_image.getpixel((x, y))
-            if b > g and b > r:
-                matrix[y, x] = 1  # Blue
-            elif g > r and g > b:
-                matrix[y, x] = 2  # Green
+            
+            
+            diff_rg = abs(r - g)
+            diff_gb = abs(g - b)
+
+            # Categorize the pixel based on the differences
+            if diff_rg > 15 and diff_gb > 15:
+                if b > max(r, g):
+                    matrix[y, x] = 1  # Blue
+                else:
+                    matrix[y, x] = 2  # Green
             else:
                 matrix[y, x] = 3    # Black
+            
+            
+# =============================================================================
+#             if b > g and b > r:
+#                 matrix[y, x] = 1  # Blue
+#             elif g > r and g > b:
+#                 matrix[y, x] = 2  # Green
+#             else:
+#                 matrix[y, x] = 3    # Black
+# =============================================================================
+                
+                
     return matrix
 
 
-# Example usage
-image_path = "/content/gent_small.png"  # Replace with your PNG image path
-matrix = png_to_matrix(image_path)
-print(matrix)
+def png_to_matrix(image_path):
+    image = Image.open(image_path)
+    rgb_image = image.convert("RGB")
+    width, height = rgb_image.size
+
+    matrix = np.zeros((height, width), dtype=np.uint8)
+    for y in range(height):
+        for x in range(width):
+            r, g, b = rgb_image.getpixel((x, y))
+            
+            
+            diff_rg = abs(r - g)
+            diff_gb = abs(g - b)
+
+            # Categorize the pixel based on the differences
+            if diff_rg > 20 and diff_gb > 20:
+                if b > max(r, g):
+                    matrix[y, x] = 1  # Blue
+                else:
+                    matrix[y, x] = 2  # Green
+            else:
+                matrix[y, x] = 3    # Black
+            
+            
+# =============================================================================
+#             if b > g and b > r:
+#                 matrix[y, x] = 1  # Blue
+#             elif g > r and g > b:
+#                 matrix[y, x] = 2  # Green
+#             else:
+#                 matrix[y, x] = 3    # Black
+# =============================================================================
+                
+                
+    return matrix
+
+
+
+
+
+
