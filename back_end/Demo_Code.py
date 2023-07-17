@@ -5,9 +5,25 @@ Created on Mon Jul 10 10:19:16 2023
 @author: andre 
 """
 import functions
-      
-# Example usage 
-image_path = os.path.join(subdirectory_path , "test_small.jpg")  # Replace with your PNG image path
+import matplotlib.pyplot as plt
+import time
+import pandas as pd
+import numpy as np
+import joblib
+# Start the timer
+import os
+start_time = time.time()
+
+current_directory = os.getcwd()
+
+
+subdirectory_name = "plots"
+
+# Create the path to the subdirectory
+subdirectory_path = os.path.join(current_directory, subdirectory_name)
+
+# Example usage
+image_path = os.path.join(subdirectory_path , "test_smallv2.jpg")  # Replace with your PNG image path
 matrix = functions.png_to_matrix(image_path)   
 #cmap=functions.create_green_to_blue_cmap()
 #plt.figure()
@@ -19,8 +35,8 @@ fracs = functions.count_value_in_kernel2(matrix, 40)
 #%%
 
 
-rows = 100
-cols = 100
+rows = 10 
+cols = 10
 
 col_to_keep = ['ALT', 'WATER', 'GREEN', 'IMPERVIOUS', 'WATER_1000', 'GREEN_1000',
        'IMPERVIOUS_1000', 'SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
@@ -72,9 +88,3 @@ end_time = time.time()
 # Calculate the elapsed time
 elapsed_time = end_time - start_time
 print(f"Elapsed time: {elapsed_time} seconds")
-
-
-#%%
-
-import sklearn 
-print(sklearn.__version__)
