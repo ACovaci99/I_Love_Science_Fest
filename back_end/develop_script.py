@@ -15,6 +15,7 @@ import joblib
 import os
 
 from PIL import Image
+#%%
 start_time = time.time()
 
 current_directory = os.getcwd()
@@ -53,8 +54,7 @@ print(f"Elapsed time: {elapsed_time} seconds")
 
 from PIL import Image
 
-def png_to_image(image_path):
-    image = Image.open(image_path)
+def png_to_image(image):
     rgb_image = image.convert("RGB")
     width, height = rgb_image.size
 
@@ -81,27 +81,34 @@ def png_to_image(image_path):
     return output_image
 
 
-image_path = image_path
-output_image = png_to_image(image_path)
+urrent_directory = os.getcwd()
+
+
+subdirectory_name = "plots"
+
+# Create the path to the subdirectory
+subdirectory_path = os.path.join(current_directory, subdirectory_name)
+
+image_path = os.path.join(subdirectory_path , "cropped.jpeg")  # Replace with your PNG image path
+
+image = Image.open(image_path)
+
+output_image = png_to_image(image)
 output_image.show()  # Display the resulting image
 
 
 #%%
 from PIL import Image
 
-def reduce_resolution(image, factor):
-    width, height = image.size
-    print(width, height)
 
-    new_width = width // factor
-    new_height = height // factor
+def reduce_resolution(image, plate_width , plate_height):
 
-    resized_image = image.resize((new_width, new_height))
+    resized_image = image.resize((plate_width, plate_height))
 
     return resized_image
 
 
-new_ = reduce_resolution(output_image, 27)
+new_ = reduce_resolution(output_image, 16 , 16)
 new_.show()
 
 #%%
@@ -152,3 +159,19 @@ plt.figure()
 df_vlinder.t2m_inca.plot()
 plt.figure()
 df_vlinder.wind_speed_inca.plot()
+
+
+#%%
+import functions
+
+current_directory = os.getcwd()
+subdirectory_name = "plots"
+# Create the path to the subdirectory
+subdirectory_path = os.path.join(current_directory, subdirectory_name)
+
+# Example usage
+image_path = os.path.join(subdirectory_path , "cropped.jpeg")  # Replace with your PNG image path
+
+image = Image.open(image_path)
+plot = functions.main_func(image,10)
+plot.show()

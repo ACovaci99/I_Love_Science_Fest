@@ -33,8 +33,6 @@ matrix = functions.png_to_matrix(image_path)
 #plt.show()
 fracs = functions.count_value_in_kernel2(matrix, 40)
 
-
-#%%
 image = Image.open(image_path)
 width, height = image.size
 
@@ -49,7 +47,7 @@ df = pd.DataFrame(fracs)
 df=df.rename(columns={0:'WATER_1000', 1:'GREEN_1000', 2:'IMPERVIOUS_1000', 3:'WATER', 4:'GREEN', 5:'IMPERVIOUS',})
 
 df_reff=df.head(1)
-df_reff.WATER_1000 = 0.0
+df_reff.loc[0,'WATER_1000'] = 0.0
 df_reff.WATER = 0.0
 df_reff.IMPERVIOUS_1000 = 0.0
 df_reff.IMPERVIOUS = 0.0
