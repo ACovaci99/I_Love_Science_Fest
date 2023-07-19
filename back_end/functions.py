@@ -265,7 +265,9 @@ def png_to_image2(image):
 
     return matrix
 
-def main_func(image,scale):
+def run_module(image,scale):
+    # takes in a PIL image and a scale (needs to be a an integer)
+    scale = int(scale)
     start_time = time.time()
     color_high_res = png_to_image(image)
     low_res = reduce_resolution(color_high_res, 16 , 16)
@@ -296,7 +298,7 @@ def main_func(image,scale):
     df = pd.DataFrame(fracs)
     df=df.rename(columns={0:'WATER_1000', 1:'GREEN_1000', 2:'IMPERVIOUS_1000', 3:'WATER', 4:'GREEN', 5:'IMPERVIOUS',})
 
-    df_reff=df.head(1)
+    df_reff=df.head(1).copy()
     df_reff.loc[0,'WATER_1000'] = 0.0
     df_reff.loc[0,'WATER'] = 0.0
     df_reff.loc[0,'IMPERVIOUS_1000'] = 0.0
@@ -328,7 +330,7 @@ def main_func(image,scale):
     arr= arr - T_reff
     xd=np.reshape(arr,(rows,cols))
     fig = plt.figure()
-    functions.plot_heatmap(xd, 'cubehelix',vmin=0, vmax=6)
+    functions.plot_heatmap(xd, 'plasma',vmin=0, vmax=6)
     plt.title('Urban Heat Island Intensity Ghent at t= 01 h')
     plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
     final_plot = plt_to_image(fig)
