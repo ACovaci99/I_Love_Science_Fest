@@ -1,0 +1,10 @@
+# Kooli part, hardware Set-up: 
+	-	SD card formatter: formatting by over writing the SD card (takes some time)
+	-	Raspberry pi imager: install Raspberry pi OS 32bits (no camera support for 64)
+	-	Boot the cards, do the basic configuration (language, time zone, etc.)
+	-	Do updates and upgrades.
+	-	Enable SSH and Camera. (sudo raspi-config then reboot)
+	-	Increase swap: https://pimylifeup.com/raspberry-pi-swap-file/ (2048)
+	-	Create new python env. https://python.land/virtual-environments/virtualenv (ilsf_env) 
+	-	Install the needed libraries (manually or through the requirements.txt file ($ pip install -r requirements.txt) (take a small eternity))
+	-	Install opencv (https://raspberrypi-guide.github.io/programming/install-opencv ) 
