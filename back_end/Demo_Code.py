@@ -12,6 +12,8 @@ import numpy as np
 import joblib
 # Start the timer
 import os
+
+from PIL import Image
 start_time = time.time()
 
 current_directory = os.getcwd()
@@ -31,12 +33,11 @@ matrix = functions.png_to_matrix(image_path)
 #plt.show()
 fracs = functions.count_value_in_kernel2(matrix, 40)
 
+image = Image.open(image_path)
+width, height = image.size
 
-#%%
-
-
-rows = 10 
-cols = 10
+rows = height 
+cols = width
 
 col_to_keep = ['ALT', 'WATER', 'GREEN', 'IMPERVIOUS', 'WATER_1000', 'GREEN_1000',
        'IMPERVIOUS_1000', 'SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
@@ -46,7 +47,7 @@ df = pd.DataFrame(fracs)
 df=df.rename(columns={0:'WATER_1000', 1:'GREEN_1000', 2:'IMPERVIOUS_1000', 3:'WATER', 4:'GREEN', 5:'IMPERVIOUS',})
 
 df_reff=df.head(1)
-df_reff.WATER_1000 = 0.0
+df_reff.loc[0,'WATER_1000'] = 0.0
 df_reff.WATER = 0.0
 df_reff.IMPERVIOUS_1000 = 0.0
 df_reff.IMPERVIOUS = 0.0

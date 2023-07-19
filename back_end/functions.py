@@ -10,9 +10,20 @@ import matplotlib.colors as mcolors
 import numpy as np
 import random
 
+import functions
+import matplotlib.pyplot as plt
+import time
+import pandas as pd
+import numpy as np
+import joblib
+# Start the timer
+import os
+
+from PIL import Image
+
 
 def count_value_in_kernel2(matrix, radius):
-    radius = 20 #my choice 1000 m
+    #radius = 20 #my choice 1000 m
     matrix = pad_matrix(matrix, radius)
     rows = len(matrix)
     cols = len(matrix[0])
@@ -29,11 +40,8 @@ def count_value_in_kernel2(matrix, radius):
     sub_rad = int(radius / 5) #250 m
     sub_kernel = generate_circle_kernel(sub_rad)
     kernel_sub_area = (1+sub_rad*2)*(1+sub_rad*2)
-    counter=0
 
     for r in range(kernel_start, kernel_end_row):
-        print(counter)
-        counter=counter+1
         for c in range(kernel_start, kernel_end_col):
           # big kernel
           rows_needed = get_integers_within_distance(r, radius)
@@ -153,14 +161,14 @@ def create_green_to_blue_cmap():
     colors = ['blue', 'green', 'black']
     cmap = mcolors.LinearSegmentedColormap.from_list('green_to_blue', colors)
     return cmap
-cmap = create_green_to_blue_cmap()
+#cmap = create_green_to_blue_cmap()
 
 
 from PIL import Image
 import numpy as np
 
-def png_to_matrix(image_path):
-    image = Image.open(image_path)
+
+def png_to_matrix(image, bool_= False):
     rgb_image = image.convert("RGB")
     width, height = rgb_image.size
 
@@ -168,16 +176,193 @@ def png_to_matrix(image_path):
     for y in range(height):
         for x in range(width):
             r, g, b = rgb_image.getpixel((x, y))
-            if b > g and b > r:
-                matrix[y, x] = 1  # Blue
-            elif g > r and g > b:
-                matrix[y, x] = 2  # Green
+            
+            
+            diff_rg = abs(r - g)
+            diff_gb = abs(g - b)
+            
+            if bool_:
+                # Categorize the pixel based on the differences
+                if diff_rg > 30 and diff_gb > 30:
+                    if b > max(r, g):
+                        matrix[y, x] = 1  # Blue
+                    if g > max(r, b):
+                        matrix[y, x] = 2  # Green
+                else:
+                    matrix[y, x] = 3    # Black
             else:
-                matrix[y, x] = 3    # Black
+                
+                if b > g and b > r:
+                    matrix[y, x] = 1  # Blue
+                elif g > r and g > b:
+                    matrix[y, x] = 2  # Green
+                else:
+                    matrix[y, x] = 3    # Black
+                
+                
     return matrix
 
+def png_to_image(image):
+    rgb_image = image.convert("RGB")
+    width, height = rgb_image.size
 
-# Example usage
-image_path = "/content/gent_small.png"  # Replace with your PNG image path
-matrix = png_to_matrix(image_path)
-print(matrix)
+    output_image = Image.new("RGB", (width, height))
+
+    for y in range(height):
+        for x in range(width):
+            r, g, b = rgb_image.getpixel((x, y))
+            
+            diff_rg = abs(r - g)
+            diff_gb = abs(g - b)
+
+            # Categorize the pixel based on the differences
+            if diff_rg > 20 and diff_gb > 15:
+                if b > max(r, g):
+                    color = (0, 0, 255)    # Blue
+                else:
+                    color = (0, 255, 0)    # Green
+            else:
+                color = (0, 0, 0)          # Black
+
+            output_image.putpixel((x, y), color)
+
+    return output_image
+
+def reduce_resolution(image, plate_width , plate_height):
+
+    resized_image = image.resize((plate_width, plate_height))
+    width, height = resized_image.size
+    print(width, height)
+    
+    return resized_image
+
+
+def png_to_image2(image):
+    rgb_image = image.convert("RGB")
+    width, height = rgb_image.size
+    
+    
+
+    matrix = np.zeros((height, width), dtype=np.uint8)
+
+    for y in range(height):
+        for x in range(width):
+            r, g, b = rgb_image.getpixel((x, y))
+            #print(r, g, b)
+            
+            diff_rg = abs(r - g)
+            diff_gb = abs(g - b)
+            #print(diff_rg, diff_rg, r, g, b)
+
+            # Categorize the pixel based on the differences
+            if diff_gb > 30:
+                if b > max(r, g):
+                    matrix[y, x] = 1    # Blue
+                else:
+                    matrix[y, x] = 2    # Green
+            else:
+                matrix[y, x] = 3          # Black
+
+    return matrix
+
+def run_module(image,scale):
+    # takes in a PIL image and a scale (needs to be a an integer)
+    scale = int(scale)
+    start_time = time.time()
+    color_high_res = png_to_image(image)
+    low_res = reduce_resolution(color_high_res, 16 , 16)
+    low_res_matrix = png_to_image2(low_res)
+    
+    cmap=functions.create_green_to_blue_cmap()
+    plt.figure()
+    functions.plot_heatmap(low_res_matrix, cmap, vmin=1, vmax=3)
+    plt.show()
+
+
+    #cale = int(scale * 20)
+    fracs = functions.count_value_in_kernel2(low_res_matrix, scale)
+
+    rows = 16
+    cols = 16
+    
+    
+    current_directory = os.getcwd()
+    subdirectory_name = "plots"
+    # Create the path to the subdirectory
+    subdirectory_path = os.path.join(current_directory, subdirectory_name)
+
+    col_to_keep = ['ALT', 'WATER', 'GREEN', 'IMPERVIOUS', 'WATER_1000', 'GREEN_1000',
+           'IMPERVIOUS_1000', 'SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
+           'rel_humid_inca', 'wind_speed_inca', 'max_t2m_inca', 'min_t2m_inca']
+
+    df = pd.DataFrame(fracs)
+    df=df.rename(columns={0:'WATER_1000', 1:'GREEN_1000', 2:'IMPERVIOUS_1000', 3:'WATER', 4:'GREEN', 5:'IMPERVIOUS',})
+
+    df_reff=df.head(1).copy()
+    df_reff.loc[0,'WATER_1000'] = 0.0
+    df_reff.loc[0,'WATER'] = 0.0
+    df_reff.loc[0,'IMPERVIOUS_1000'] = 0.0
+    df_reff.loc[0,'IMPERVIOUS'] = 0.0
+    df_reff.loc[0,'GREEN_1000'] = 1.0
+    df_reff.loc[0,'GREEN'] = 1.0
+    df_reff['Station']= 'vlinder05'
+
+    time_='2020-09-15 01:00:00'
+    df_vlinder = pd.read_csv(os.path.join(subdirectory_path,'big_2020_09.csv' ))
+    df_vlinder=df_vlinder.rename(columns={"short_wave_from_sky_1hour":"SHORT_WAVE_FROM_SKY_1HOUR","net_radiation_1hour":"NET_RADIATION_1HOUR"})
+    df_vlinder=df_vlinder[df_vlinder['Vlinder']=='vlinder05']
+    df_vlinder=df_vlinder[df_vlinder['datetime']==time_]
+    df_vlinder=df_vlinder[['ALT','SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
+           'rel_humid_inca', 'wind_speed_inca', 'max_t2m_inca', 'min_t2m_inca','Vlinder']]
+    df['Station']= 'vlinder05'
+    df=df.merge(df_vlinder,how='left',left_on='Station',  right_on='Vlinder')
+    df_reff=df_reff.merge(df_vlinder,how='left',left_on='Station',  right_on='Vlinder')
+    df=df[col_to_keep]
+    df_reff=df_reff[col_to_keep]
+
+
+
+    model = joblib.load(os.path.join(subdirectory_path, "random_forest.joblib"))
+    temp=model.predict(df)
+
+    T_reff=model.predict(df_reff)
+    arr = np.array(temp)
+    arr= arr - T_reff
+    xd=np.reshape(arr,(rows,cols))
+    fig = plt.figure()
+    functions.plot_heatmap(xd, 'plasma',vmin=0, vmax=6)
+    plt.title('Urban Heat Island Intensity Ghent at t= 01 h')
+    plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
+    final_plot = plt_to_image(fig)
+    plt.close()
+
+    end_time = time.time()
+
+    # Calculate the elapsed time
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time} seconds")
+    
+    return final_plot
+
+
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from PIL import Image
+
+def plt_to_image(fig):
+    canvas = FigureCanvas(fig)
+
+    # Render the plot onto the FigureCanvas
+    canvas.draw()
+
+    # Get the RGB pixel buffer from the FigureCanvas
+    buffer = canvas.buffer_rgba()
+
+    image = Image.frombuffer("RGBA", canvas.get_width_height(), buffer, "raw", "RGBA", 0, 1)
+
+    # Convert the image to RGB mode if needed
+    image_rgb = image.convert("RGB")
+    
+    return image_rgb
+
+
