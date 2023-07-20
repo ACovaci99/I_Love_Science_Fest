@@ -151,8 +151,8 @@ def pad_matrix(matrix, r):
 
 
 
-def plot_heatmap(matrix, color, vmin=None, vmax=None):
-    heatmap = plt.imshow(matrix, cmap=color, interpolation='bilinear', vmin=vmin, vmax=vmax)
+def plot_heatmap(matrix, color, intp, vmin=None, vmax=None):
+    heatmap = plt.imshow(matrix, cmap=color, interpolation=intp, vmin=vmin, vmax=vmax)
     colorbar = plt.colorbar(heatmap)
     plt.show()
     
@@ -305,7 +305,7 @@ def run_module(image,scale):
     
     cmap=functions.create_green_to_blue_cmap()
     plt.figure()
-    functions.plot_heatmap(low_res_matrix, cmap, vmin=1, vmax=3)
+    functions.plot_heatmap(low_res_matrix, cmap, 'nearest',vmin=1, vmax=3)
     plt.show()
 
 
@@ -360,7 +360,7 @@ def run_module(image,scale):
     arr= arr - T_reff
     xd=np.reshape(arr,(rows,cols))
     fig = plt.figure()
-    functions.plot_heatmap(xd, 'plasma',vmin=0, vmax=6)
+    functions.plot_heatmap(xd, 'plasma', 'bilinear',vmin=0, vmax=6)
     plt.title('Urban Heat Island Intensity Ghent at t= 01 h')
     plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
     final_plot = plt_to_image(fig)
