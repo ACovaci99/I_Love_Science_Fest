@@ -89,9 +89,12 @@ subdirectory_name = "plots"
 # Create the path to the subdirectory
 subdirectory_path = os.path.join(current_directory, subdirectory_name)
 
-image_path = os.path.join(subdirectory_path , "cropped.jpeg")  # Replace with your PNG image path
+image_path = os.path.join(subdirectory_path , "knipsel2.PNG")  # Replace with your PNG image path
 
 image = Image.open(image_path)
+width, height = image.size
+
+print(width, height)
 
 output_image = png_to_image(image)
 output_image.show()  # Display the resulting image
@@ -103,13 +106,61 @@ from PIL import Image
 
 def reduce_resolution(image, plate_width , plate_height):
 
-    resized_image = image.resize((plate_width, plate_height))
+    resized_image = image.resize((plate_width, plate_height), resample=Image.NEAREST)
 
     return resized_image
-#nearest interpolation with opencv
-#median filtering
 
-new_ = reduce_resolution(output_image, 16 , 16)
+import numpy as np
+from PIL import Image
+from scipy.ndimage import median_filter
+
+def median_filter_pil(image, kernel_size):
+    # Convert the PIL image to a NumPy array
+    image_array = np.array(image)
+
+    # Apply median filtering to the image array
+    filtered_array = median_filter(image_array, size=kernel_size)
+    
+    # Convert the filtered array back to uint8 data type
+    filtered_array = filtered_array.astype(np.uint8)
+
+    # Convert the filtered array back to a PIL image
+    filtered_image = Image.fromarray(filtered_array)
+
+    return filtered_image
+
+def median_filter_custom(image, kernel_size):
+    # Create a copy of the original image
+    filtered_image = image.copy()
+
+    # Get the dimensions of the image
+    width, height = image.size
+
+    # Calculate the padding size for the kernel
+    padding = kernel_size // 2
+
+    # Iterate over each pixel in the image
+    for y in range(padding, height - padding):
+        for x in range(padding, width - padding):
+            # Extract the neighborhood around the current pixel
+            neighborhood = image.crop((x - padding, y - padding, x + padding + 1, y + padding + 1))
+
+            # Get the pixel values within the neighborhood
+            pixels = list(neighborhood.getdata())
+
+            # Calculate the median value within the neighborhood
+            median = sorted(pixels)[len(pixels) // 2]
+
+            # Set the pixel value in the filtered image to the median
+            filtered_image.putpixel((x, y), median)
+
+    return filtered_image
+
+new_ = reduce_resolution(output_image, 320 , 320)
+new_.show()
+new_=median_filter_custom(new_, 6)
+new_.show()
+new_ = reduce_resolution(new_, 16 , 16)
 new_.show()
 
 #%%
@@ -171,10 +222,10 @@ subdirectory_name = "plots"
 subdirectory_path = os.path.join(current_directory, subdirectory_name)
 
 # Example usage
-image_path = os.path.join(subdirectory_path , "cropped.jpeg")  # Replace with your PNG image path
+image_path = os.path.join(subdirectory_path , "knipsel2.PNG")  # Replace with your PNG image path
 
 image = Image.open(image_path)
-plot = functions.run_module(image, 8)
+plot = functions.run_module(image, 4)
 plot.show()
 
 
@@ -189,7 +240,7 @@ subdirectory_name = "plots"
 subdirectory_path = os.path.join(current_directory, subdirectory_name)
 
 # Example usage
-image_path = os.path.join(subdirectory_path , "new_firas2.png") 
+image_path = os.path.join(subdirectory_path , "new_firas4.png") 
 
 image = Image.open(image_path)
 image.show()

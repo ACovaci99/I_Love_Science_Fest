@@ -151,8 +151,8 @@ def pad_matrix(matrix, r):
 
 
 
-def plot_heatmap(matrix, color, vmin=None, vmax=None):
-    heatmap = plt.imshow(matrix, cmap=color, interpolation='nearest', vmin=vmin, vmax=vmax)
+def plot_heatmap(matrix, color, intp, vmin=None, vmax=None):
+    heatmap = plt.imshow(matrix, cmap=color, interpolation=intp, vmin=vmin, vmax=vmax)
     colorbar = plt.colorbar(heatmap)
     plt.show()
     
@@ -230,7 +230,7 @@ def png_to_image(image):
 
 def reduce_resolution(image, plate_width , plate_height):
 
-    resized_image = image.resize((plate_width, plate_height))
+    resized_image = image.resize((plate_width, plate_height), resample=Image.NEAREST)
     width, height = resized_image.size
     print(width, height)
     
@@ -265,17 +265,47 @@ def png_to_image2(image):
 
     return matrix
 
+def median_filter_custom(image, kernel_size):
+    # Create a copy of the original image
+    filtered_image = image.copy()
+
+    # Get the dimensions of the image
+    width, height = image.size
+
+    # Calculate the padding size for the kernel
+    padding = kernel_size // 2
+
+    # Iterate over each pixel in the image
+    for y in range(padding, height - padding):
+        for x in range(padding, width - padding):
+            # Extract the neighborhood around the current pixel
+            neighborhood = image.crop((x - padding, y - padding, x + padding + 1, y + padding + 1))
+
+            # Get the pixel values within the neighborhood
+            pixels = list(neighborhood.getdata())
+
+            # Calculate the median value within the neighborhood
+            median = sorted(pixels)[len(pixels) // 2]
+
+            # Set the pixel value in the filtered image to the median
+            filtered_image.putpixel((x, y), median)
+
+    return filtered_image
+
 def run_module(image,scale):
     # takes in a PIL image and a scale (needs to be a an integer)
     scale = int(scale)
     start_time = time.time()
     color_high_res = png_to_image(image)
-    low_res = reduce_resolution(color_high_res, 16 , 16)
+    low_res = reduce_resolution(color_high_res, 320 , 320)
+    new_=median_filter_custom(low_res, 6)
+    low_res = reduce_resolution(new_, 16 , 16)
+    
     low_res_matrix = png_to_image2(low_res)
     
     cmap=functions.create_green_to_blue_cmap()
     plt.figure()
-    functions.plot_heatmap(low_res_matrix, cmap, vmin=1, vmax=3)
+    functions.plot_heatmap(low_res_matrix, cmap, 'nearest',vmin=1, vmax=3)
     plt.show()
 
 
@@ -330,7 +360,7 @@ def run_module(image,scale):
     arr= arr - T_reff
     xd=np.reshape(arr,(rows,cols))
     fig = plt.figure()
-    functions.plot_heatmap(xd, 'plasma',vmin=0, vmax=6)
+    functions.plot_heatmap(xd, 'plasma', 'bilinear',vmin=0, vmax=6)
     plt.title('Urban Heat Island Intensity Ghent at t= 01 h')
     plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
     final_plot = plt_to_image(fig)
