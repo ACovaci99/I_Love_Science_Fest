@@ -5,8 +5,9 @@ from DropDownBar import DropDownBar
 from IPython.display import display
 
 import sys
-sys.path.insert(0, 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\back_end')  # Replace with the actual path to the other repository
-sys.path.insert(0, 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\front_end')  # Replace with the actual path to the other repository
+import os
+sys.path.insert(0, '../ILSF/back_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the other repository
 
 
 from functions import run_module as back_end_run
@@ -147,11 +148,3 @@ class GUI_Main_Page:
 
         # Get New Image From Camera
         image = capture_img('image_1.png')
-
-
-
-
-
-
-
-# GUI_Main_Page()
