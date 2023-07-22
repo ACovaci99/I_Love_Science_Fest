@@ -76,7 +76,7 @@ class GUI_Main_Page:
         original_image = Image.open(image_path)
 
         # Resize the image to fit the canvas
-        resized_image = original_image.resize((500, 500), Image.ANTIALIAS)
+        resized_image = original_image.resize((500, 500), Image.LANCZOS)
         photo = ImageTk.PhotoImage(resized_image)
         return photo
 
