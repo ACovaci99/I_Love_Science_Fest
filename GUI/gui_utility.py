@@ -3,7 +3,7 @@ from PIL import ImageTk, Image
 from Button import CustomButton
 from DropDownBar import DropDownBar
 from IPython.display import display
-# from ILSF.back_end.functions import
+from ILSF.back_end.functions import run_module as back_end_run
 from pathlib import Path
 import json
 
@@ -20,7 +20,14 @@ def read_json_file(file_path):
         print(f"Error decoding JSON data in file: {file_path}")
         return {}
 
+def convert_to_pil(label):
+    # Get the PhotoImage object from the label
+    photo_image = label.cget("image")
 
+    # Convert the PhotoImage to a PIL Image object
+    pil_image = ImageTk.getimage(photo_image)
+
+    return pil_image
 
 class GUI_Main_Page:
 
@@ -104,11 +111,22 @@ class GUI_Main_Page:
 
 
 
+
+
     def action_submit(self):
         self.__change_buttons_status__(capturing = True)
-        selected_value = float(self.drop_down.get_selected_value())
-        print(f"Submit - {selected_value}")
-        # TODO:Send the Image to Andrei's Model
+
+        # Get Panel data
+        scale = float(self.drop_down.get_selected_value())
+        image = convert_to_pil(self.label)
+
+        # Send the Image to Andrei's Model
+        final_plot = back_end_run(image, scale)
+
+        # Update The Image
+        final_plot = ImageTk.PhotoImage(final_plot)
+        self.label.configure(image=final_plot)
+        self.label.image = final_plot
 
 
     def action_retake(self):
