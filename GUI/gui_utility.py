@@ -3,7 +3,12 @@ from PIL import ImageTk, Image
 from Button import CustomButton
 from DropDownBar import DropDownBar
 from IPython.display import display
-from ILSF.back_end.functions import run_module as back_end_run
+
+import sys
+sys.path.insert(0, 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\back_end')  # Replace with the actual path to the other repository
+
+
+from functions import run_module as back_end_run
 from pathlib import Path
 import json
 
@@ -118,7 +123,8 @@ class GUI_Main_Page:
 
         # Get Panel data
         scale = float(self.drop_down.get_selected_value())
-        image = convert_to_pil(self.label)
+        image = self.label.image
+        image = ImageTk.getimage(image)
 
         # Send the Image to Andrei's Model
         final_plot = back_end_run(image, scale)
@@ -127,6 +133,7 @@ class GUI_Main_Page:
         final_plot = ImageTk.PhotoImage(final_plot)
         self.label.configure(image=final_plot)
         self.label.image = final_plot
+
 
 
     def action_retake(self):
