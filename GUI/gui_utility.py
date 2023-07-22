@@ -4,7 +4,21 @@ from Button import CustomButton
 from DropDownBar import DropDownBar
 from IPython.display import display
 # from ILSF.back_end.functions import
+from pathlib import Path
+import json
 
+
+def read_json_file(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        return data
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return {}
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON data in file: {file_path}")
+        return {}
 
 
 
@@ -46,8 +60,11 @@ class GUI_Main_Page:
 
         # TODO: Intialize Drop Down Bar
         # TODO: Read DropDownData from the JSON File given by Andrei
-        # self.drop_down = DropDownBar(root, json_data)
-        # self.drop_down.create_dropdown()
+        json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
+
+        json_data = read_json_file(json_path)
+        self.drop_down = DropDownBar(self.root, json_data)
+        self.drop_down.create_dropdown()
 
 
         # End of Loop
@@ -91,7 +108,6 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = True)
         selected_value = float(self.drop_down.get_selected_value())
         print(f"Submit - {selected_value}")
-
         # TODO:Send the Image to Andrei's Model
 
 
