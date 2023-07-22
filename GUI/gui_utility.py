@@ -6,9 +6,11 @@ from IPython.display import display
 
 import sys
 sys.path.insert(0, 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\back_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\front_end')  # Replace with the actual path to the other repository
 
 
 from functions import run_module as back_end_run
+from camera_capture import capture_img
 from pathlib import Path
 import json
 
@@ -107,8 +109,7 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = False)
 
         # Get New Image From Camera
-        path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\1.png'
-        new_image = self.read_image(path)
+        image = capture_img('image_1.png')
 
         # Update The Image
         self.label.configure(image=new_image)
@@ -144,7 +145,8 @@ class GUI_Main_Page:
         self.label.configure(image=new_image)
         self.label.image = new_image
 
-        # Open Camera To Take A Picture
+        # Get New Image From Camera
+        image = capture_img('image_1.png')
 
 
 
