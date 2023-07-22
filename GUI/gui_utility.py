@@ -41,8 +41,8 @@ class GUI_Main_Page:
 
         # TODO: Intialize Drop Down Bar
         # TODO: Read DropDownData from the JSON File given by Andrei
-        self.drop_down = DropDownBar(root, json_data)
-        self.drop_down.create_dropdown()
+        # self.drop_down = DropDownBar(root, json_data)
+        # self.drop_down.create_dropdown()
 
 
         # End of Loop
@@ -74,6 +74,10 @@ class GUI_Main_Page:
         print("Capture")
 
         # TODO:Firass Function should be called here.
+        # image = capture()
+        # Canvas.image.change(image)
+
+
 
     def action_submit(self):
         self.__change_buttons_status__(capturing = True)
@@ -81,6 +85,8 @@ class GUI_Main_Page:
         print(f"Submit - {selected_value}")
 
         # TODO:Send the Image to Andrei's Model
+        # image  = Canvas.image.get_image()
+        #return image, get_image_scale()
 
     def action_retake(self):
         self.__change_buttons_status__(capturing = True)
