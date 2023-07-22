@@ -2,8 +2,7 @@ import tkinter as tk
 from PIL import ImageTk, Image
 from Button import CustomButton
 from DropDownBar import DropDownBar
-from IPython.display import display
-# from ILSF.back_end.functions import
+
 
 
 
@@ -12,23 +11,21 @@ class GUI_Main_Page:
 
 
 
-    def __init__(self):
-
-        self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
-
+    def __init__(self, root):
         # Begin The Loop
-        self.root = tk.Tk()
 
+        self.root = root
         # Set Page Title and Logo
         self.root.title("VUB ILSF")
-        self.root.iconphoto(False, tk.PhotoImage(file=self.default_img_path))
+        self.root.iconphoto(False, tk.PhotoImage(file='G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'))
         self.root.resizable(0, 0)
         self.root.geometry("800x800")
 
         # Initialize The Image Canvas
         image = self.read_image()
-        self.label = tk.Label(self.root, image=image)
-        self.label.pack(pady=10)
+        self.canvas = tk.Canvas(self.root, width=500, height=500, relief=tk.SUNKEN)
+        self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=image)
+        self.canvas.pack(pady=10)
 
 
 
@@ -51,7 +48,7 @@ class GUI_Main_Page:
 
 
         # End of Loop
-        self.root.mainloop()
+
 
 
     def read_image(self, image_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'):
@@ -76,14 +73,11 @@ class GUI_Main_Page:
 
     def action_capture(self):
         self.__change_buttons_status__(capturing = False)
+        print("Capture")
 
-        # Get New Image From Camera
-        path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\1.png'
-        new_image = self.read_image(path)
-
-        # Update The Image
-        self.label.configure(image=new_image)
-        self.label.image = new_image
+        # TODO:Firass Function should be called here.
+        # image = capture()
+        # Canvas.image.change(image)
 
 
 
@@ -93,22 +87,22 @@ class GUI_Main_Page:
         print(f"Submit - {selected_value}")
 
         # TODO:Send the Image to Andrei's Model
-
+        # image  = Canvas.image.get_image()
+        #return image, get_image_scale()
 
     def action_retake(self):
         self.__change_buttons_status__(capturing = True)
-
-        # Change to Default Image
-        new_image = self.read_image(self.default_img_path)
-        self.label.configure(image=new_image)
-        self.label.image = new_image
-
-        # Open Camera To Take A Picture
+        image = self.read_image(image_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\1.png') # TODO: Call Firas Function
+        # self.canvas.create_image(0, 0, anchor=tk.NW, image=image)
+        # self.canvas.itemconfig(self.image_on_canvas, image = image)
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=image)
+        print("ReTake")
 
 
 
 
-
-
+self.root = tk.Tk()
 
 GUI_Main_Page()
+
+self.root.mainloop()
