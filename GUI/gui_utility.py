@@ -6,12 +6,12 @@ from IPython.display import display
 
 import sys
 import os
-sys.path.insert(0, '../ILSF/back_end')  # Replace with the actual path to the other repository
-sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../I_Love_Science_Fest/back_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../I_Love_Science_Fest/front_end')  # Replace with the actual path to the other repository
 
 
 from functions import run_module as back_end_run
-from camera_capture import capture_img
+from camera_capture_webcam import capture_img
 from pathlib import Path
 import json
 
@@ -43,7 +43,7 @@ class GUI_Main_Page:
 
     def __init__(self):
 
-        self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
+        self.default_img_path = 'D:/github/I_Love_Science_Fest/GUI/vub.png'
 
         # Begin The Loop
         self.root = tk.Tk()
@@ -75,7 +75,7 @@ class GUI_Main_Page:
 
         # TODO: Intialize Drop Down Bar
         # TODO: Read DropDownData from the JSON File given by Andrei
-        json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
+        json_path = "D:/github/I_Love_Science_Fest/GUI/Scales.json"
 
         json_data = read_json_file(json_path)
         self.drop_down = DropDownBar(self.root, json_data)
@@ -86,7 +86,7 @@ class GUI_Main_Page:
         self.root.mainloop()
 
 
-    def read_image(self, image_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'):
+    def read_image(self, image_path = 'D:/github/I_Love_Science_Fest/GUI/vub.png'):
         # Load the image
         original_image = Image.open(image_path)
 
@@ -110,7 +110,11 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = False)
 
         # Get New Image From Camera
-        image = capture_img('image_1.png')
+        new_image = capture_img('image_1.png')
+        dummy = Image.open('D:/github/I_Love_Science_Fest/result.jpg')
+        new_image = ImageTk.PhotoImage(dummy)
+        
+         
 
         # Update The Image
         self.label.configure(image=new_image)

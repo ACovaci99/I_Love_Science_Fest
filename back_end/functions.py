@@ -317,10 +317,11 @@ def run_module(image,scale):
     
     
     current_directory = os.getcwd()
-    subdirectory_name = "plots"
+    print(current_directory)
+    subdirectory_name = "back_end\plots"
     # Create the path to the subdirectory
     subdirectory_path = os.path.join(current_directory, subdirectory_name)
-
+    print(subdirectory_path)
     col_to_keep = ['ALT', 'WATER', 'GREEN', 'IMPERVIOUS', 'WATER_1000', 'GREEN_1000',
            'IMPERVIOUS_1000', 'SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
            'rel_humid_inca', 'wind_speed_inca', 'max_t2m_inca', 'min_t2m_inca']
