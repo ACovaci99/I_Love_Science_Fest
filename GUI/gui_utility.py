@@ -15,27 +15,11 @@ from camera_capture import capture_img
 from pathlib import Path
 import json
 
+from hd_utility import *
 
-def read_json_file(file_path):
-    try:
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-        return data
-    except FileNotFoundError:
-        print(f"File not found: {file_path}")
-        return {}
-    except json.JSONDecodeError:
-        print(f"Error decoding JSON data in file: {file_path}")
-        return {}
 
-def convert_to_pil(label):
-    # Get the PhotoImage object from the label
-    photo_image = label.cget("image")
 
-    # Convert the PhotoImage to a PIL Image object
-    pil_image = ImageTk.getimage(photo_image)
 
-    return pil_image
 
 class GUI_Main_Page:
 

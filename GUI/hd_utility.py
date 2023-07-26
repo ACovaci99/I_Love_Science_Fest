@@ -1,5 +1,6 @@
-import qrcode # Install using: pip install qrcode[pil]
 
+# =================================================================== #
+import qrcode # Install using: pip install qrcode[pil]
 def make_qr(data: str, file_name: str) -> None:
     """
     Generate a QR code image and save it to a file.
@@ -10,6 +11,9 @@ def make_qr(data: str, file_name: str) -> None:
 
     Returns:
     None
+
+    Example Usage:
+    make_qr("https://www.openai.com", "openai_qr.png")
     """
 
     qr = qrcode.QRCode(
@@ -25,4 +29,28 @@ def make_qr(data: str, file_name: str) -> None:
     img.save(file_name)
 
 
-make_qr("https://www.openai.com", "openai_qr.png")
+# =================================================================== #
+import json
+def read_json_file(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        return data
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return {}
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON data in file: {file_path}")
+        return {}
+
+
+# =================================================================== #
+from PIL import ImageTk, Image
+def convert_to_pil(label):
+    # Get the PhotoImage object from the label
+    photo_image = label.cget("image")
+
+    # Convert the PhotoImage to a PIL Image object
+    pil_image = ImageTk.getimage(photo_image)
+
+    return pil_image
