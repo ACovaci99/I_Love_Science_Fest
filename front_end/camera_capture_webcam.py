@@ -10,7 +10,7 @@ def capture_img(name_path):
 	"""
 
 	# Open the webcam (use the appropriate index for your webcam, 0 for the first webcam)
-	cap = cv2.VideoCapture(1)
+	cap = cv2.VideoCapture(0)
 	
 	# Check if the webcam is opened successfully
 	if not cap.isOpened():
@@ -18,7 +18,7 @@ def capture_img(name_path):
 		return None
 	
 	# Add a small delay to stabilize the camera
-	time.sleep(2)
+	#time.sleep(2)
 	
 	# Read a frame from the webcam
 	ret, image = cap.read()
@@ -62,6 +62,7 @@ def capture_img(name_path):
 
 	# Save the cropped image
 	cv2.imwrite("result.jpg", cropped_image)
+    
     # print(type(cropped_image))
 
 	# Display the original and cropped images (optional)

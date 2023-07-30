@@ -3,6 +3,7 @@ from PIL import ImageTk, Image
 from Button import CustomButton
 from DropDownBar import DropDownBar
 from IPython.display import display
+import time
 
 import sys
 import os
@@ -13,6 +14,7 @@ sys.path.insert(0, '../I_Love_Science_Fest/front_end')  # Replace with the actua
 from functions import run_module as back_end_run
 from camera_capture_webcam import capture_img
 from pathlib import Path
+from test_camera import Camera
 import json
 
 
@@ -80,6 +82,8 @@ class GUI_Main_Page:
         json_data = read_json_file(json_path)
         self.drop_down = DropDownBar(self.root, json_data)
         self.drop_down.create_dropdown()
+        
+        self.camera=Camera()
 
 
         # End of Loop
@@ -110,10 +114,13 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = False)
 
         # Get New Image From Camera
-        new_image = capture_img('image_1.png')
+        start_time= time.time()
+        new_image = self.camera.capture_img_new('image_1.png')
         dummy = Image.open('D:/github/I_Love_Science_Fest/result.jpg')
         new_image = ImageTk.PhotoImage(dummy)
-        
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time} seconds")
          
 
         # Update The Image
@@ -151,4 +158,4 @@ class GUI_Main_Page:
         self.label.image = new_image
 
         # Get New Image From Camera
-        image = capture_img('image_1.png')
+        # image = capture_img('image_1.png')

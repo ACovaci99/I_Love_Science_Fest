@@ -23,41 +23,54 @@ from PIL import Image
 
 
 def count_value_in_kernel2(matrix, radius):
-    #radius = 20 #my choice 1000 m
-    matrix = pad_matrix(matrix, radius)
+    # radius = 1000 m
+    # start by padding the matrix with NaN values such that the kernel sweeping
+    # doesn't have problems with corners and edges
+    matrix = pad_matrix(matrix, radius) 
     rows = len(matrix)
     cols = len(matrix[0])
     fracs=[]
 
-    # Calculate the kernel's starting and ending indices
+    # make a kernel for the r=1000 m 
     kernel = generate_circle_kernel(radius)
     kernel_start = radius
     kernel_end_row = rows-radius
     kernel_end_col = cols-radius
     kernel_area = (1+radius*2)*(1+radius*2)
 
-
-    sub_rad = int(radius / 5) #250 m
+    # make a kernel for the r=250 m
+    sub_rad = int(radius / 4) #250 m
     sub_kernel = generate_circle_kernel(sub_rad)
     kernel_sub_area = (1+sub_rad*2)*(1+sub_rad*2)
-
+    
+    # loop over the entire matrix between the points that are not NaN
     for r in range(kernel_start, kernel_end_row):
         for c in range(kernel_start, kernel_end_col):
+            
           # big kernel
           rows_needed = get_integers_within_distance(r, radius)
           cols_needed = get_integers_within_distance(c, radius)
+          
+          # make a subset of the matrix with the size of the big kernel
+          
           matrix_needed = extract_matrix_subset(matrix, rows_needed, cols_needed)
+          
+          # multiplying element wise the subsetted matrix with the big kernel
           new_mat = elementwise_multiply(matrix_needed, kernel)
           num_nan = count_element_in_matrix(new_mat, np.nan)
           num_0 = count_element_in_matrix(new_mat, 0)
+          
+          #counting the number of values in the matrix that are 0 & NaN and substracting
           val_in_kernel = kernel_area - num_nan - num_0
 
+          # calculating the fractions for r = 1000 m 
           blue_frac=count_element_in_matrix(new_mat, 1)/val_in_kernel
           green_frac=count_element_in_matrix(new_mat, 2)/val_in_kernel
           black_frac=count_element_in_matrix(new_mat, 3)/val_in_kernel
 
 
-          #sub kernel
+          #use the matrix obtained after the pointwise multiplication for aplying the 
+          # medium kernel on the center to get the fractions at r =250 m
           rows_needed = get_integers_within_distance(radius, sub_rad)
           cols_needed = get_integers_within_distance(radius, sub_rad)
           matrix_sub = extract_matrix_subset(new_mat, rows_needed, cols_needed)
@@ -81,7 +94,8 @@ def elementwise_multiply(matrix1, matrix2):
     result = np.multiply(matrix1, matrix2)
     return result
 
-def extract_matrix_subset(matrix, rows, cols):
+def extract_matrix_subset(matrix, rows, cols): 
+    # get a subset of a bigger matrix at the rows and cols values
     subset = []
 
     for row in rows:
@@ -93,6 +107,8 @@ def extract_matrix_subset(matrix, rows, cols):
     return subset
 
 def generate_circle_kernel(radius):
+    #generates a kernele of size 2 * radius + 1 with all the ellements with 
+    # the radius from the center equal to 1 and the rest equal to 0
     size = 2 * radius + 1
     kernel = np.zeros((size, size))
 
@@ -106,6 +122,8 @@ def generate_circle_kernel(radius):
 
 
 def get_integers_within_distance(target, distance):
+    #gets all integers within a distance from a value
+    # used to calculate the rows and cols for extract_matrix_subset
     integers = []
 
     for i in range(target - distance, target + distance + 1):
@@ -115,20 +133,23 @@ def get_integers_within_distance(target, distance):
 
 
 
-def generate_random_matrix(rows, cols, fractions):
-    matrix = []
-
-    for i in range(rows):
-        row = []
-        for j in range(cols):
-            value = random.choices(range(1, len(fractions) + 1), weights=fractions)[0]
-            row.append(value)
-        matrix.append(row)
-
-    return matrix
+# =============================================================================
+# def generate_random_matrix(rows, cols, fractions):
+#     matrix = []
+# 
+#     for i in range(rows):
+#         row = []
+#         for j in range(cols):
+#             value = random.choices(range(1, len(fractions) + 1), weights=fractions)[0]
+#             row.append(value)
+#         matrix.append(row)
+# 
+#     return matrix
+# =============================================================================
 
 
 def count_element_in_matrix(matrix, element):
+    # couts the amount of times an element appears in a matrix 
     count = 0
 
     if np.isnan(element):
@@ -141,6 +162,7 @@ def count_element_in_matrix(matrix, element):
 
 
 def pad_matrix(matrix, r):
+    # pads out the matrix with a buffer of size r of NaN values
     m = len(matrix)
     n = len(matrix[0])
     padded_matrix = [[np.nan] * (n + 2 * r) for _ in range(m + 2 * r)]
@@ -152,6 +174,7 @@ def pad_matrix(matrix, r):
 
 
 def plot_heatmap(matrix, color, intp, vmin=None, vmax=None):
+    # makes a heatmap with a specific output 
     heatmap = plt.imshow(matrix, cmap=color, interpolation=intp, vmin=vmin, vmax=vmax)
     colorbar = plt.colorbar(heatmap)
     plt.show()
@@ -160,8 +183,8 @@ def plot_heatmap(matrix, color, intp, vmin=None, vmax=None):
 def create_green_to_blue_cmap():
     colors = ['blue', 'green', 'black']
     cmap = mcolors.LinearSegmentedColormap.from_list('green_to_blue', colors)
+    #used to make the blue, green, black landcover heatmaps
     return cmap
-#cmap = create_green_to_blue_cmap()
 
 
 from PIL import Image
@@ -169,6 +192,7 @@ import numpy as np
 
 
 def png_to_matrix(image, bool_= False):
+    #function that turns an image file into an Blue, green & black matrix 
     rgb_image = image.convert("RGB")
     width, height = rgb_image.size
 
@@ -203,6 +227,7 @@ def png_to_matrix(image, bool_= False):
     return matrix
 
 def png_to_image(image):
+    #turns an image into a blue, green and black variant image 
     rgb_image = image.convert("RGB")
     width, height = rgb_image.size
 
@@ -229,15 +254,13 @@ def png_to_image(image):
     return output_image
 
 def reduce_resolution(image, plate_width , plate_height):
-
-    resized_image = image.resize((plate_width, plate_height), resample=Image.NEAREST)
-    width, height = resized_image.size
-    print(width, height)
-    
+    #reduce the resolution of an image object to a desired height x width
+    resized_image = image.resize((plate_width, plate_height), resample=Image.NEAREST)    
     return resized_image
 
 
 def png_to_image2(image):
+    #function that turns an image file into an Blue, green & black matrix 
     rgb_image = image.convert("RGB")
     width, height = rgb_image.size
     
@@ -266,6 +289,10 @@ def png_to_image2(image):
     return matrix
 
 def median_filter_custom(image, kernel_size):
+    #sweeps a kernel over an image and calcutes the median for the kernel and sets 
+    # that pixel to that value. this is done to smooth out the plot and filter out 
+    # small errors  (e.g., shadows)
+    
     # Create a copy of the original image
     filtered_image = image.copy()
 
@@ -294,19 +321,30 @@ def median_filter_custom(image, kernel_size):
 
 def run_module(image,scale):
     # takes in a PIL image and a scale (needs to be a an integer)
+    
+    
+    
+    # part 1: turning the image into a landcover map
     scale = int(scale)
     start_time = time.time()
     color_high_res = png_to_image(image)
+    #turn picture into a square of lower resolution to do a first cleanup
     low_res = reduce_resolution(color_high_res, 320 , 320)
+    #apply median filtering to smooth out the picture a bit
     new_=median_filter_custom(low_res, 6)
+    #reduce it to the 16 x 16 resolution of the baseplate
     low_res = reduce_resolution(new_, 16 , 16)
-    
+    # turn this image into a matrix 
     low_res_matrix = png_to_image2(low_res)
     
+    
+    #optional turn this into 
     cmap=functions.create_green_to_blue_cmap()
     plt.figure()
     functions.plot_heatmap(low_res_matrix, cmap, 'nearest',vmin=1, vmax=3)
     plt.show()
+    
+    
 
 
     #cale = int(scale * 20)
@@ -317,11 +355,9 @@ def run_module(image,scale):
     
     
     current_directory = os.getcwd()
-    print(current_directory)
-    subdirectory_name = "back_end\plots"
+    subdirectory_name = "back_end/plots"
     # Create the path to the subdirectory
     subdirectory_path = os.path.join(current_directory, subdirectory_name)
-    print(subdirectory_path)
     col_to_keep = ['ALT', 'WATER', 'GREEN', 'IMPERVIOUS', 'WATER_1000', 'GREEN_1000',
            'IMPERVIOUS_1000', 'SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
            'rel_humid_inca', 'wind_speed_inca', 'max_t2m_inca', 'min_t2m_inca']
@@ -358,12 +394,14 @@ def run_module(image,scale):
 
     T_reff=model.predict(df_reff)
     arr = np.array(temp)
-    arr= arr - T_reff
+    arr_= arr - T_reff
+    xd=np.reshape(arr_,(rows,cols))
     xd=np.reshape(arr,(rows,cols))
     fig = plt.figure()
-    functions.plot_heatmap(xd, 'plasma', 'bilinear',vmin=0, vmax=6)
-    plt.title('Urban Heat Island Intensity Ghent at t= 01 h')
-    plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
+    functions.plot_heatmap(xd, 'plasma', 'bilinear')
+    #functions.plot_heatmap(xd, 'plasma', 'bilinear',vmin=0, vmax=6)
+    plt.title('Case 1: UHI at night during a heatwave (summer)')
+    #plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
     final_plot = plt_to_image(fig)
     plt.close()
 
@@ -381,6 +419,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from PIL import Image
 
 def plt_to_image(fig):
+    #turns a plt.fig format into an image format.
     canvas = FigureCanvas(fig)
 
     # Render the plot onto the FigureCanvas
