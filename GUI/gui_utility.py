@@ -15,7 +15,7 @@ from camera_capture import capture_img
 from pathlib import Path
 import json
 
-from hd_utility import *
+from hd_utility import HD_Utility
 
 
 
