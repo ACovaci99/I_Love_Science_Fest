@@ -59,12 +59,19 @@ class GUI_Main_Page:
         self.btn_submit.pack(side=tk.LEFT, padx=(0, 10))
         button_frame.pack()
 
-        # TODO: Intialize Drop Down Bar
-        # TODO: Read DropDownData from the JSON File given by Andrei
-        json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
 
+        # Dropdown Frame:
+        dropdown_frame = tk.Frame(self.root)
+        dropdown_frame.pack(pady=10)
+
+        # Create Label Field
+        self.label_field = tk.Label(dropdown_frame, text="Choose Scale: ")
+        self.label_field.pack(side=tk.LEFT)
+
+        # Intialize Drop Down Bar
+        json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
         json_data = HD_Utility.read_json_file(json_path)
-        self.drop_down = DropDownBar(self.root, json_data)
+        self.drop_down = DropDownBar(dropdown_frame, json_data)
         self.drop_down.create_dropdown()
 
 
