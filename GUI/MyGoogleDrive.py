@@ -2,7 +2,16 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 
+
+# Before Using this module, you should setup a Google Drive API. Use these two links as instruction to do so:
+# 1. https://developers.google.com/drive/api/quickstart/python
+# 2. https://www.projectpro.io/recipes/upload-files-to-google-drive-using-python
+# After setting the API, copy the client_secrets.json file (which you should download from the API page) and paste it next to main.py in the same directory.
+
+
+import os
 # If modifying these SCOPES, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
@@ -57,7 +66,7 @@ class MyGoogleDrive:
 
 if __name__ == '__main__':
     my_drive = MyGoogleDrive()
-    file_id = my_drive.upload_image('myphoto.jpg', 'My Photo', 'Folder_ID')
-    my_drive.make_folder_public('Folder_ID')
+    file_id = my_drive.upload_image('1.png', 'My Photo', '1CXVI1h_wzcwPIeqaS3mMvgQZlL0s14DH')
+    my_drive.make_folder_public('1CXVI1h_wzcwPIeqaS3mMvgQZlL0s14DH')
     url = my_drive.get_file_url(file_id)
     print(url)
