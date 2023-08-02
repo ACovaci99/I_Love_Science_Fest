@@ -3,8 +3,9 @@ from googleapiclient.http import MediaFileUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-
-
+from hd_utility import HD_Utility
+from datetime import datetime
+import json
 # Before Using this module, you should setup a Google Drive API. Use these two links as instruction to do so:
 # 1. https://developers.google.com/drive/api/quickstart/python
 # 2. https://www.projectpro.io/recipes/upload-files-to-google-drive-using-python
@@ -16,8 +17,14 @@ import os
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 class MyGoogleDrive:
-    def __init__(self):
+    def __init__(self, initilization_json_path = None):
         self.creds = self.sign_in()
+        if(initilization_json_path):
+            self.google_drive_json = HD_Utility.read_json_file(initilization_json_path)
+            self.folder_id = self.google_drive_json["folder_id"]
+            self.make_folder_public(self.folder_id)
+
+
 
     def sign_in(self):
         creds = None
@@ -65,8 +72,10 @@ class MyGoogleDrive:
         return result.get('webViewLink')
 
 if __name__ == '__main__':
-    my_drive = MyGoogleDrive()
-    file_id = my_drive.upload_image('1.png', 'My Photo', '1CXVI1h_wzcwPIeqaS3mMvgQZlL0s14DH')
-    my_drive.make_folder_public('1CXVI1h_wzcwPIeqaS3mMvgQZlL0s14DH')
-    url = my_drive.get_file_url(file_id)
-    print(url)
+    # my_drive = MyGoogleDrive()
+    # name = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    # file_id = my_drive.upload_image('1.png', f'My Photo - {name}', '1CXVI1h_wzcwPIeqaS3mMvgQZlL0s14DH')
+    # my_drive.make_folder_public('1CXVI1h_wzcwPIeqaS3mMvgQZlL0s14DH')
+    # url = my_drive.get_file_url(file_id)
+    # print(url)
+    print("finished")

@@ -16,7 +16,8 @@ from pathlib import Path
 import json
 
 from hd_utility import HD_Utility
-
+from datetime import datetime
+import json
 
 
 
@@ -25,9 +26,10 @@ class GUI_Main_Page:
 
 
 
-    def __init__(self):
+    def __init__(self, google_drive_handler):
 
         self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
+        self.google_drive_handler = google_drive_handler
 
         # Begin The Loop
         self.root = tk.Tk()
@@ -61,7 +63,7 @@ class GUI_Main_Page:
         # TODO: Read DropDownData from the JSON File given by Andrei
         json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
 
-        json_data = read_json_file(json_path)
+        json_data = HD_Utility.read_json_file(json_path)
         self.drop_down = DropDownBar(self.root, json_data)
         self.drop_down.create_dropdown()
 
@@ -94,15 +96,11 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = False)
 
         # Get New Image From Camera
-        image = capture_img('image_1.png')
+        new_image = capture_img('image_1.png')
 
         # Update The Image
         self.label.configure(image=new_image)
         self.label.image = new_image
-
-
-
-
 
     def action_submit(self):
         self.__change_buttons_status__(capturing = True)
@@ -114,11 +112,29 @@ class GUI_Main_Page:
 
         # Send the Image to Andrei's Model
         final_plot = back_end_run(image, scale)
+        ### Todo: Save final plot image locally
 
         # Update The Image
         final_plot = ImageTk.PhotoImage(final_plot)
         self.label.configure(image=final_plot)
         self.label.image = final_plot
+
+        # Make a PDF File
+
+        # Upload The File To Google Drive
+        image_name = '1.png'
+        file_name_in_drive = f'Analysis - {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}'
+        file_id = self.google_drive_handler.upload_image(image_name, file_name_in_drive, self.google_drive_handler.folder_id)
+
+        # Create The QR Code
+        url = my_drive.get_file_url(file_id)
+        qr_code_img = HD_Utility.make_qr(data=url, file_name=f'{url}.png')
+
+        # Update The Image
+        final_plot = ImageTk.PhotoImage(qr_code_img)
+        self.label.configure(image=final_plot)
+        self.label.image = final_plot
+
 
 
 
