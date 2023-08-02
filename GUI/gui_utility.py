@@ -11,7 +11,7 @@ sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the o
 
 
 from functions import run_module as back_end_run
-from camera_capture import Camera
+from camera_capture import capture_img
 from pathlib import Path
 import json
 
@@ -44,7 +44,7 @@ class GUI_Main_Page:
     def __init__(self):
 
         self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
-        
+
         # Begin The Loop
         self.root = tk.Tk()
 
@@ -75,14 +75,11 @@ class GUI_Main_Page:
 
         # TODO: Intialize Drop Down Bar
         # TODO: Read DropDownData from the JSON File given by Andrei
-        
         json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
 
         json_data = read_json_file(json_path)
         self.drop_down = DropDownBar(self.root, json_data)
         self.drop_down.create_dropdown()
-        
-        self.camera=Camera()
 
 
         # End of Loop
@@ -113,7 +110,7 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = False)
 
         # Get New Image From Camera
-        new_image = self.camera.capture_img_new('image_1.png')
+        image = capture_img('image_1.png')
 
         # Update The Image
         self.label.configure(image=new_image)
@@ -150,4 +147,4 @@ class GUI_Main_Page:
         self.label.image = new_image
 
         # Get New Image From Camera
-        # image = capture_img('image_1.png')
+        image = capture_img('image_1.png')
