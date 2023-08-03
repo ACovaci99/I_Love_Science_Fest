@@ -149,6 +149,25 @@ class HD_Utility:
         # Build the PDF
         doc.build(elements)
 
+    def load_and_resize_image(path, size):
+        img = Image.open(path)
+        img = img.resize(size, Image.ANTIALIAS)
+        return img
+
+    def create_concatenated_image(img1, img2, img3):
+        widths, heights = zip(*(i.size for i in [img1, img2, img3]))
+        total_width = sum(widths)
+        max_height = max(heights)
+
+        new_img = Image.new('RGB', (total_width, max_height))
+
+        x_offset = 0
+        for img in [img1, img2, img3]:
+            new_img.paste(img, (x_offset, 0))
+            x_offset += img.width
+
+        return new_img
+
 
 class HD_Camera:
     # import cv2
