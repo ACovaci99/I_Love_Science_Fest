@@ -11,7 +11,7 @@ sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the o
 
 
 from functions import run_module as back_end_run
-from camera_capture import capture_img
+from camera_capture import Camera
 from pathlib import Path
 import json
 
@@ -46,8 +46,6 @@ class GUI_Main_Page:
         self.label.pack(pady=10)
 
 
-
-
         # initialize Buttons
         button_frame = tk.Frame(self.root , pady=30)
         self.btn_retake     = CustomButton(button_frame, text = "Retake", state =  self.__get_button_status__(False), command = self.action_retake)
@@ -73,6 +71,9 @@ class GUI_Main_Page:
         json_data = HD_Utility.read_json_file(json_path)
         self.drop_down = DropDownBar(dropdown_frame, json_data)
         self.drop_down.create_dropdown()
+
+        # Initializing The Camera
+        self.camera = Camera()
 
 
         # End of Loop
@@ -103,7 +104,7 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = False)
 
         # Get New Image From Camera
-        new_image = capture_img('image_1.png')
+        new_image = self.camera.capture_img_new('image_1.png')
 
         # Update The Image
         self.label.configure(image=new_image)
@@ -114,17 +115,17 @@ class GUI_Main_Page:
 
         # Get Panel data
         scale = float(self.drop_down.get_selected_value())
-        image = self.label.image
-        image = ImageTk.getimage(image)
+        img_label = self.label.image
+        img_label = ImageTk.getimage(img_label)
 
         # Send the Image to Andrei's Model
-        final_plot = back_end_run(image, scale)
+        img_heatmap_processed = back_end_run(img_label, scale)
         ### Todo: Save final plot image locally
 
         # Update The Image
-        final_plot = ImageTk.PhotoImage(final_plot)
-        self.label.configure(image=final_plot)
-        self.label.image = final_plot
+        img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
+        self.label.configure(image=img_heatmap_processed)
+        self.label.image = img_heatmap_processed
 
         # Make a PDF File
 
