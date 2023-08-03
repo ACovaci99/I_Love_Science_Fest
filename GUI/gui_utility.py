@@ -128,16 +128,16 @@ class GUI_Main_Page:
         img_label = ImageTk.getimage(img_label)
 
         # Send the Image to Andrei's Model
-        # img_heatmap_processed = back_end_run(img_label, scale)
+        img_heatmap_processed = back_end_run(img_label, scale)
 
 
         # Update The Image
-        # img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
-        # self.label.configure(image=img_heatmap_processed)
-        # self.label.image = img_heatmap_processed
+        img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
+        self.label.configure(image=img_heatmap_processed)
+        self.label.image = img_heatmap_processed
 
         #Save Images
-        # img_heatmap_processed.save("Heatmap_processed.png")
+        img_heatmap_processed.save("Heatmap_processed.png")
         img_label.save("img_label.png")
 
         # Make a PDF File
@@ -155,7 +155,7 @@ class GUI_Main_Page:
         # Cat three plots (img1, img2, qr)
         size = (400, 400)
         img1 = HD_Utility.load_and_resize_image("img_label.png", size)
-        img2 = HD_Utility.load_and_resize_image("1.jpg", size)
+        img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
         img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
         new_img = HD_Utility.create_concatenated_image(img1, img2, img3)
         final_plot = ImageTk.PhotoImage(new_img)
