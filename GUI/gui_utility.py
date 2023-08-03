@@ -16,9 +16,10 @@ from pathlib import Path
 import json
 
 from hd_utility import HD_Utility
+from hd_utility import HD_Camera, VideoWindow
 from datetime import datetime
 import json
-
+import cv2
 
 
 
@@ -33,6 +34,10 @@ class GUI_Main_Page:
 
         # Begin The Loop
         self.root = tk.Tk()
+
+        #### Video Window
+        self.__open_video_window__()
+
 
         # Set Page Title and Logo
         self.root.title("VUB ILSF")
@@ -73,12 +78,11 @@ class GUI_Main_Page:
         self.drop_down.create_dropdown()
 
         # Initializing The Camera
-        self.camera = Camera()
+        # self.camera = Camera()
 
 
         # End of Loop
         self.root.mainloop()
-
 
     def read_image(self, image_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'):
         # Load the image
@@ -104,7 +108,9 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = False)
 
         # Get New Image From Camera
-        new_image = self.camera.capture_img_new('image_1.png')
+        if self.video_capture.current_frame is not None:
+            new_image = self.video_capture.current_frame_tk
+        # new_image = self.camera.capture_img_new('image_1.png')
 
         # Update The Image
         self.label.configure(image=new_image)
@@ -119,24 +125,30 @@ class GUI_Main_Page:
         img_label = ImageTk.getimage(img_label)
 
         # Send the Image to Andrei's Model
-        img_heatmap_processed = back_end_run(img_label, scale)
-        ### Todo: Save final plot image locally
+        # img_heatmap_processed = back_end_run(img_label, scale)
+
 
         # Update The Image
-        img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
-        self.label.configure(image=img_heatmap_processed)
-        self.label.image = img_heatmap_processed
+        # img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
+        # self.label.configure(image=img_heatmap_processed)
+        # self.label.image = img_heatmap_processed
+
+        #Save Images
+        # img_heatmap_processed.save("Heatmap_processed.png")
+
+        img_label.save("img_label.png")
 
         # Make a PDF File
+        file_name = "Sample PDF.pdf"
+        HD_Utility.create_pdf(("img_label.png", "1.jpg"), ("This is French", "This is English"), file_name)
 
         # Upload The File To Google Drive
-        image_name = '1.png'
-        file_name_in_drive = f'Analysis - {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}'
-        file_id = self.google_drive_handler.upload_image(image_name, file_name_in_drive, self.google_drive_handler.folder_id)
+        file_name_in_drive = f'Analysis - {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}.pdf'
+        file_id = self.google_drive_handler.upload_image(file_name, file_name_in_drive, self.google_drive_handler.folder_id)
 
         # Create The QR Code
-        url = my_drive.get_file_url(file_id)
-        qr_code_img = HD_Utility.make_qr(data=url, file_name=f'{url}.png')
+        url = self.google_drive_handler.get_file_url(file_id)
+        qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
 
         # Update The Image
         final_plot = ImageTk.PhotoImage(qr_code_img)
@@ -144,6 +156,9 @@ class GUI_Main_Page:
         self.label.image = final_plot
 
 
+    def __open_video_window__(self):
+        self.video_window = tk.Toplevel(self.root)
+        self.video_capture = VideoWindow(self.video_window)
 
 
     def action_retake(self):
