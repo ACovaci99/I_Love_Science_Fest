@@ -1,72 +1,95 @@
-# import picamera    # Library needed to operate the Picamera
-import time
 import cv2
+import time
 import numpy as np
+from PIL import ImageTk, Image
+
+class Camera:
+    def __init__(self):
+        # Initialize the camera capture object
+        self.camera = cv2.VideoCapture(0)
+
+        # Check if the camera was successfully opened
+        if not self.camera.isOpened():
+            raise RuntimeError("Failed to open the camera.")
+
+    def __del__(self):
+        # Release the camera when the object is deleted
+        if self.camera.isOpened():
+            self.camera.release()
+
+    def is_opened(self):
+        # Check if the camera is opened
+        return self.camera.isOpened()
+
+    def capture_img_new(self, name_path):
+        # Check if the webcam is opened successfully
+        if not self.camera.isOpened():
+            print("Error: Unable to access the webcam.")
+            return None
+        start_time = time.time()
+
+        # Add a small delay to stabilize the camera (you can uncomment this if needed)
+        # time.sleep(2)
+
+        # Read a frame from the webcam
+        ret, image = self.camera.read()
+        
+        
+        if not ret:
+            print("Error: Failed to capture an image from the camera.")
+        elif image is None or image.size == 0:
+            print("Error: Captured image is empty or invalid.")
+        else:
+            # Valid image data, now try to write it to a file
+            try:
+                cv2.imwrite(name_path, image)
+                print(f"Image saved successfully as '{name_path}'.")
+            except Exception as e:
+                print(f"Error occurred while writing the image: {e}")
 
 
-def capture_img(name_path):
-	"""
-		It captures the image then cropps it to extract just the square of legos.
-		:param name_path: String, the absolute path + name of the picture (or just name like "test.jpg")
-		:return:  returns the cropped image
-	"""
+        # Save the image to the specified file path
+        cv2.imwrite(name_path, image)
 
-	# camera = picamera.PiCamera()  # Initialise the camera
-	time.sleep(2)  # Add a small delay to stop fidgeting
-	# camera.capture(name_path)     # Capture the picture and save it following that path+name
+        if not ret:
+            print("Error: Failed to capture an image from the webcam.")
+            return None
 
-	'''
-	Leaving this here (the live feed then take a picture thingie)
-	 just for when we need it for testing before we get the stand done
-	        try:
-	                # Start the live feed
-	                camera.start_preview()
+        # Convert the image to grayscale to get rid of colors and their confusion
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-	                # Wait for the user to press "enter"
-	                input("Press 'Enter' to capture an image...")
+        # Threshold the image to create a mask based on the grayscale interval [120, 255]
+        _, mask = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY_INV)
 
-	                # Capture an image
-	                camera.capture(path_img)
-	        finally:
-	                # Stop the live feed
-	                camera.stop_preview()
-	'''
+        # Find contours in the mask
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-	# Load the image
-	image = cv2.imread(name_path)
+        # Find the largest contour (the Lego square) based on its area
+        largest_contour = max(contours, key=cv2.contourArea)
 
-	# Convert the image to grayscale to get rid of colours and their confusion
-	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # Create a mask for the largest contour
+        mask = np.zeros(image.shape[:2], dtype=np.uint8)
+        cv2.drawContours(mask, [largest_contour], -1, (255), thickness=cv2.FILLED)
 
-	# Threshold the image to create a mask based on the grayscale interval [120,255]
-	_, mask = cv2.threshold(gray, 120, 255, cv2.THRESH_BINARY_INV)
+        # Bitwise-and the mask with the original image to remove the background
+        result = cv2.bitwise_and(image, image, mask=mask)
 
-	# Find contours in the mask
-	contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Find the bounding box coordinates of the contour
+        x, y, w, h = cv2.boundingRect(largest_contour)
 
-	# Find the largest contour (the Lego square) based on its area
-	largest_contour = max(contours, key=cv2.contourArea)
+        # Crop the image to the region of interest
+        cropped_image = result[y:y + h, x:x + w]
 
-	# Create a mask for the largest contour
-	mask = np.zeros(image.shape[:2], dtype=np.uint8)
-	cv2.drawContours(mask, [largest_contour], -1, (255), thickness=cv2.FILLED)
+        # Save the cropped image
+        cv2.imwrite("result.jpg", cropped_image)
+        
+        end_time = time.time()
 
-	# Bitwise-and the mask with the original image to remove the background
-	result = cv2.bitwise_and(image, image, mask=mask)
+        # Calculate the elapsed time
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time} seconds")
+        
+        dummy = Image.open('result.jpg')
+        cropped_image = ImageTk.PhotoImage(dummy)
 
-	# Find the bounding box coordinates of the contour
-	x, y, w, h = cv2.boundingRect(largest_contour)
-
-	# Crop the image to the region of interest
-	cropped_image = result[y:y + h, x:x + w]
-
-	## Display the original and cropped images
-	# cv2.imshow("Original Image", image)
-	# cv2.imshow("Cropped Image", cropped_image)
-	# cv2.waitKey(0)
-	# cv2.destroyAllWindows()
-
-	return cropped_image
-
-## for test if needed
-# capture_img("original.jpg")
+        return cropped_image
