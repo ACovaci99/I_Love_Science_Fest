@@ -9,6 +9,7 @@ import json
 # Before Using this module, you should setup a Google Drive API. Use these two links as instruction to do so:
 # 1. https://developers.google.com/drive/api/quickstart/python
 # 2. https://www.projectpro.io/recipes/upload-files-to-google-drive-using-python
+# 3. https://developers.google.com/workspace/guides/create-credentials#choose_the_access_credential_that_is_right_for_you
 # After setting the API, copy the client_secrets.json file (which you should download from the API page) and paste it next to main.py in the same directory.
 
 
