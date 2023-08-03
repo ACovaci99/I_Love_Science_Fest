@@ -58,10 +58,12 @@ class GUI_Main_Page:
         self.btn_retake     = CustomButton(button_frame, text = "Retake", state =  self.__get_button_status__(False), command = self.action_retake)
         self.btn_capture    = CustomButton(button_frame, text = "Capture", state = self.__get_button_status__(True), command = self.action_capture)
         self.btn_submit     = CustomButton(button_frame, text = "Submit", state = self.__get_button_status__(False), command = self.action_submit)
+        self.close_extra    = CustomButton(button_frame, text = "Close Extra", state = self.__get_button_status__(True), command = self.action_close_extra_pages)
 
         self.btn_capture.pack(side=tk.LEFT, padx=(10, 10))
         self.btn_retake.pack(side=tk.LEFT, padx=(0, 10))
         self.btn_submit.pack(side=tk.LEFT, padx=(0, 10))
+        self.close_extra.pack(side=tk.LEFT, padx=(0, 10))
         button_frame.pack()
 
 
@@ -112,6 +114,10 @@ class GUI_Main_Page:
         # Update The Image
         self.label.configure(image=new_image)
         self.label.image = new_image
+
+    def action_close_extra_pages(self):
+        for window in self.new_created_windows:
+            window.destroy()
 
     def action_submit(self):
         self.__change_buttons_status__(capturing = True)
