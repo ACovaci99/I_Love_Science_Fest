@@ -11,12 +11,12 @@ sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the o
 
 
 from functions import run_module as back_end_run
-from camera_capture import Camera
 from pathlib import Path
 import json
 
 from hd_utility import HD_Utility
-from hd_utility import HD_Camera, VideoWindow
+from hd_utility import HD_Camera
+from hd_utility import VideoWindow
 from datetime import datetime
 import json
 import cv2
@@ -77,10 +77,6 @@ class GUI_Main_Page:
         self.drop_down = DropDownBar(dropdown_frame, json_data)
         self.drop_down.create_dropdown()
 
-        # Initializing The Camera
-        # self.camera = Camera()
-
-
         # End of Loop
         self.root.mainloop()
 
@@ -110,7 +106,6 @@ class GUI_Main_Page:
         # Get New Image From Camera
         if self.video_capture.current_frame is not None:
             new_image = self.video_capture.current_frame_tk
-        # new_image = self.camera.capture_img_new('image_1.png')
 
         # Update The Image
         self.label.configure(image=new_image)
