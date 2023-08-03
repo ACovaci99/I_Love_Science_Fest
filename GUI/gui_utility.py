@@ -25,7 +25,8 @@ import cv2
 
 class GUI_Main_Page:
 
-
+    ROOT_WINDOW_DIM = "1300x700"
+    IMAGE_CANVAS_DIM = (1000, 500)
 
     def __init__(self, google_drive_handler):
 
@@ -37,13 +38,14 @@ class GUI_Main_Page:
 
         #### Video Window
         self.__open_video_window__()
+        self.new_created_windows = []
 
 
         # Set Page Title and Logo
         self.root.title("VUB ILSF")
         self.root.iconphoto(False, tk.PhotoImage(file=self.default_img_path))
         self.root.resizable(0, 0)
-        self.root.geometry("800x800")
+        self.root.geometry(GUI_Main_Page.ROOT_WINDOW_DIM)
 
         # Initialize The Image Canvas
         image = self.read_image()
@@ -85,7 +87,7 @@ class GUI_Main_Page:
         original_image = Image.open(image_path)
 
         # Resize the image to fit the canvas
-        resized_image = original_image.resize((500, 500), Image.LANCZOS)
+        resized_image = original_image.resize(GUI_Main_Page.IMAGE_CANVAS_DIM, Image.LANCZOS)
         photo = ImageTk.PhotoImage(resized_image)
         return photo
 
@@ -130,7 +132,6 @@ class GUI_Main_Page:
 
         #Save Images
         # img_heatmap_processed.save("Heatmap_processed.png")
-
         img_label.save("img_label.png")
 
         # Make a PDF File
@@ -138,15 +139,30 @@ class GUI_Main_Page:
         HD_Utility.create_pdf(("img_label.png", "1.jpg"), ("This is French", "This is English"), file_name)
 
         # Upload The File To Google Drive
-        file_name_in_drive = f'Analysis - {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}.pdf'
+        file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.pdf'
         file_id = self.google_drive_handler.upload_image(file_name, file_name_in_drive, self.google_drive_handler.folder_id)
 
         # Create The QR Code
         url = self.google_drive_handler.get_file_url(file_id)
         qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
 
+        # Cat three plots (img1, img2, qr)
+        size = (400, 400)
+        img1 = HD_Utility.load_and_resize_image("img_label.png", size)
+        img2 = HD_Utility.load_and_resize_image("1.jpg", size)
+        img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+        new_img = HD_Utility.create_concatenated_image(img1, img2, img3)
+        final_plot = ImageTk.PhotoImage(new_img)
+
+        # Create a new window and configure label
+        new_window = tk.Toplevel(self.root)
+        label = tk.Label(new_window, image=final_plot)
+        label.image = final_plot  # keep a reference to the image
+        label.pack()
+        self.new_created_windows.append(new_window)
+
         # Update The Image
-        final_plot = ImageTk.PhotoImage(qr_code_img)
+        final_plot = ImageTk.PhotoImage(new_img)
         self.label.configure(image=final_plot)
         self.label.image = final_plot
 
