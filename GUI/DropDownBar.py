@@ -10,7 +10,11 @@ class DropDownBar:
 
         # For setting the default value when booting up the drop down
         self.var = tk.StringVar(self.root)
-        self.var.set(list(self.json_data.keys())[0])
+
+        # Set Initial Value
+        initial_selected_label = list(self.json_data.keys())[0]
+        self.var.set(initial_selected_label)
+        self.selected_value = self.json_data[initial_selected_label]
 
     def create_dropdown(self):
         self.option_menu = tk.OptionMenu(self.root, self.var, *self.json_data.keys(), command=self._select_item)

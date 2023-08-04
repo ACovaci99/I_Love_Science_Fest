@@ -11,7 +11,8 @@ from reportlab.platypus import PageBreak
 from reportlab.platypus import SimpleDocTemplate
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, Image as PlatypusImage, PageBreak, Spacer
-
+import cv2
+import tkinter as tk
 
 class HD_Utility:
     # =================================================================== #
@@ -147,3 +148,61 @@ class HD_Utility:
 
         # Build the PDF
         doc.build(elements)
+
+    def load_and_resize_image(path, size):
+        img = Image.open(path)
+        img = img.resize(size, Image.ANTIALIAS)
+        return img
+
+    def create_concatenated_image(img1, img2, img3):
+        widths, heights = zip(*(i.size for i in [img1, img2, img3]))
+        total_width = sum(widths)
+        max_height = max(heights)
+
+        new_img = Image.new('RGB', (total_width, max_height))
+
+        x_offset = 0
+        for img in [img1, img2, img3]:
+            new_img.paste(img, (x_offset, 0))
+            x_offset += img.width
+
+        return new_img
+
+
+class HD_Camera:
+    # import cv2
+    def __init__(self):
+        self.vid = cv2.VideoCapture(0)
+
+    def camera_read(self):
+        ret, frame = self.vid.read()
+        return frame
+
+    def camera_release(self):
+        self.vid.release()
+
+class VideoWindow:
+    def __init__(self, root):
+        self.root = root
+        self.root.resizable(False, False)
+        self.root.overrideredirect(True)
+        self.capture = cv2.VideoCapture(0)
+        self.current_frame = None
+        self.current_frame_tk = None
+        self.canvas = tk.Canvas(root, width=600, height=600)
+        self.canvas.pack()
+        self.update_frame()
+
+    def update_frame(self):
+        ret, frame = self.capture.read()
+        if ret:
+            self.current_frame = frame
+            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            image = Image.fromarray(image)
+            image = ImageTk.PhotoImage(image)
+
+            self.canvas.create_image(0, 0, anchor=tk.NW, image=image)
+            self.canvas.image = image
+            self.current_frame_tk = image
+
+        self.root.after(10, self.update_frame)  # refresh frame every 10 ms

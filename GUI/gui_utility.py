@@ -11,20 +11,22 @@ sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the o
 
 
 from functions import run_module as back_end_run
-from camera_capture import capture_img
 from pathlib import Path
 import json
 
 from hd_utility import HD_Utility
+from hd_utility import HD_Camera
+from hd_utility import VideoWindow
 from datetime import datetime
 import json
-
+import cv2
 
 
 
 class GUI_Main_Page:
 
-
+    ROOT_WINDOW_DIM = "1300x700"
+    IMAGE_CANVAS_DIM = (1000, 500)
 
     def __init__(self, google_drive_handler):
 
@@ -34,11 +36,16 @@ class GUI_Main_Page:
         # Begin The Loop
         self.root = tk.Tk()
 
+        #### Video Window
+        self.__open_video_window__()
+        self.new_created_windows = []
+
+
         # Set Page Title and Logo
         self.root.title("VUB ILSF")
         self.root.iconphoto(False, tk.PhotoImage(file=self.default_img_path))
         self.root.resizable(0, 0)
-        self.root.geometry("800x800")
+        self.root.geometry(GUI_Main_Page.ROOT_WINDOW_DIM)
 
         # Initialize The Image Canvas
         image = self.read_image()
@@ -46,17 +53,17 @@ class GUI_Main_Page:
         self.label.pack(pady=10)
 
 
-
-
         # initialize Buttons
         button_frame = tk.Frame(self.root , pady=30)
         self.btn_retake     = CustomButton(button_frame, text = "Retake", state =  self.__get_button_status__(False), command = self.action_retake)
         self.btn_capture    = CustomButton(button_frame, text = "Capture", state = self.__get_button_status__(True), command = self.action_capture)
         self.btn_submit     = CustomButton(button_frame, text = "Submit", state = self.__get_button_status__(False), command = self.action_submit)
+        self.close_extra    = CustomButton(button_frame, text = "Close Extra", state = self.__get_button_status__(True), command = self.action_close_extra_pages)
 
         self.btn_capture.pack(side=tk.LEFT, padx=(10, 10))
         self.btn_retake.pack(side=tk.LEFT, padx=(0, 10))
         self.btn_submit.pack(side=tk.LEFT, padx=(0, 10))
+        self.close_extra.pack(side=tk.LEFT, padx=(0, 10))
         button_frame.pack()
 
 
@@ -74,17 +81,15 @@ class GUI_Main_Page:
         self.drop_down = DropDownBar(dropdown_frame, json_data)
         self.drop_down.create_dropdown()
 
-
         # End of Loop
         self.root.mainloop()
-
 
     def read_image(self, image_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'):
         # Load the image
         original_image = Image.open(image_path)
 
         # Resize the image to fit the canvas
-        resized_image = original_image.resize((500, 500), Image.LANCZOS)
+        resized_image = original_image.resize(GUI_Main_Page.IMAGE_CANVAS_DIM, Image.LANCZOS)
         photo = ImageTk.PhotoImage(resized_image)
         return photo
 
@@ -103,46 +108,74 @@ class GUI_Main_Page:
         self.__change_buttons_status__(capturing = False)
 
         # Get New Image From Camera
-        new_image = capture_img('image_1.png')
+        if self.video_capture.current_frame is not None:
+            new_image = self.video_capture.current_frame_tk
 
         # Update The Image
         self.label.configure(image=new_image)
         self.label.image = new_image
+
+    def action_close_extra_pages(self):
+        for window in self.new_created_windows:
+            window.destroy()
 
     def action_submit(self):
         self.__change_buttons_status__(capturing = True)
 
         # Get Panel data
         scale = float(self.drop_down.get_selected_value())
-        image = self.label.image
-        image = ImageTk.getimage(image)
+        img_label = self.label.image
+        img_label = ImageTk.getimage(img_label)
 
         # Send the Image to Andrei's Model
-        final_plot = back_end_run(image, scale)
-        ### Todo: Save final plot image locally
+        img_heatmap_processed = back_end_run(img_label, scale)
+
 
         # Update The Image
-        final_plot = ImageTk.PhotoImage(final_plot)
-        self.label.configure(image=final_plot)
-        self.label.image = final_plot
+        img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
+        self.label.configure(image=img_heatmap_processed)
+        self.label.image = img_heatmap_processed
+
+        #Save Images
+        img_heatmap_processed.save("Heatmap_processed.png")
+        img_label.save("img_label.png")
 
         # Make a PDF File
+        file_name = "Sample PDF.pdf"
+        HD_Utility.create_pdf(("img_label.png", "1.jpg"), ("This is French", "This is English"), file_name)
 
         # Upload The File To Google Drive
-        image_name = '1.png'
-        file_name_in_drive = f'Analysis - {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}'
-        file_id = self.google_drive_handler.upload_image(image_name, file_name_in_drive, self.google_drive_handler.folder_id)
+        file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.pdf'
+        file_id = self.google_drive_handler.upload_image(file_name, file_name_in_drive, self.google_drive_handler.folder_id)
 
         # Create The QR Code
-        url = my_drive.get_file_url(file_id)
-        qr_code_img = HD_Utility.make_qr(data=url, file_name=f'{url}.png')
+        url = self.google_drive_handler.get_file_url(file_id)
+        qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
+
+        # Cat three plots (img1, img2, qr)
+        size = (400, 400)
+        img1 = HD_Utility.load_and_resize_image("img_label.png", size)
+        img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
+        img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+        new_img = HD_Utility.create_concatenated_image(img1, img2, img3)
+        final_plot = ImageTk.PhotoImage(new_img)
+
+        # Create a new window and configure label
+        new_window = tk.Toplevel(self.root)
+        label = tk.Label(new_window, image=final_plot)
+        label.image = final_plot  # keep a reference to the image
+        label.pack()
+        self.new_created_windows.append(new_window)
 
         # Update The Image
-        final_plot = ImageTk.PhotoImage(qr_code_img)
+        final_plot = ImageTk.PhotoImage(new_img)
         self.label.configure(image=final_plot)
         self.label.image = final_plot
 
 
+    def __open_video_window__(self):
+        self.video_window = tk.Toplevel(self.root)
+        self.video_capture = VideoWindow(self.video_window)
 
 
     def action_retake(self):
