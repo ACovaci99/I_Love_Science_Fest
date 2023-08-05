@@ -1,5 +1,6 @@
 # .gitignore
 token.json
 GUI/client_secrets.json
+client_secrets.json
 GUI/token.json
 GUI/google_drive_initialization_data.json
