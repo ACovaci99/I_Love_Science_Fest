@@ -139,8 +139,9 @@ class GUI_Main_Page:
             img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
             self.label.configure(image=img_heatmap_processed)
             self.label.image = img_heatmap_processed
-        except:
+        except Exception as e:
             print("Exception: Andrei's Code Not Working in gui_utility.py")
+            print(e)
 
         # Make a PDF File
         file_name = "Sample PDF.pdf"

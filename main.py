@@ -12,7 +12,10 @@ from GUI import hd_utility
 from GUI import MyGoogleDrive
 
 # Load Google Drive
-my_drive = MyGoogleDrive.MyGoogleDrive(initilization_json_path = './GUI/google_drive_initialization_data.json')
+try:
+    my_drive = MyGoogleDrive.MyGoogleDrive(initilization_json_path = './GUI/google_drive_initialization_data.json')
+except Exception as e:
+    print("Exception:", e)
 
 # Load GUI
 gui_utility.GUI_Main_Page(my_drive)
