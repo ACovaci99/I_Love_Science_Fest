@@ -128,34 +128,55 @@ class GUI_Main_Page:
         img_label = ImageTk.getimage(img_label)
         img_label.save("img_label.png")
 
-        # Send the Image to Andrei's Model
-        img_heatmap_processed = back_end_run(img_label, scale)
-        img_heatmap_processed.save("Heatmap_processed.png")
+        #################### Image Processing ###################
+        try:
+            # Send the Image to Andrei's Model
+            img_heatmap_processed = back_end_run(img_label, scale)
+            img_heatmap_processed.save("Heatmap_processed.png")
 
 
-        # Update The Image
-        img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
-        self.label.configure(image=img_heatmap_processed)
-        self.label.image = img_heatmap_processed
-
+            # Update The Image
+            img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
+            self.label.configure(image=img_heatmap_processed)
+            self.label.image = img_heatmap_processed
+        except:
+            print("Exception: Andrei's Code Not Working in gui_utility.py")
 
         # Make a PDF File
         file_name = "Sample PDF.pdf"
         HD_Utility.create_pdf(("img_label.png", "1.jpg"), ("This is French", "This is English"), file_name)
 
-        # Upload The File To Google Drive
-        file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.pdf'
-        file_id = self.google_drive_handler.upload_image(file_name, file_name_in_drive, self.google_drive_handler.folder_id)
+        #################### Server Uploading ###################
+        try:
+            # Upload The File To Google Drive
+            file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.pdf'
+            file_id = self.google_drive_handler.upload_image(file_name, file_name_in_drive, self.google_drive_handler.folder_id)
 
-        # Create The QR Code
-        url = self.google_drive_handler.get_file_url(file_id)
-        qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
+            # Create The QR Code
+            url = self.google_drive_handler.get_file_url(file_id)
+            qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
 
-        # Cat three plots (img1, img2, qr)
+        except Exception as e:
+            print("Exception in gui_utility: Problem With Google Drive: ", e)
+
+
+        #################### Creating Final Plots ###################
+        # Initialize Images before setting:
         size = (400, 400)
-        img1 = HD_Utility.load_and_resize_image("img_label.png", size)
-        img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
-        img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+        img1 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
+        img2 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
+        img3 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
+
+        try:
+        # Cat three plots (img1, img2, qr)
+            size = (400, 400)
+            img1 = HD_Utility.load_and_resize_image("img_label.png", size)
+            img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
+            img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+        except:
+            print("Exception in gui_utility: QR or Heatmap not found.")
+
+        # Merge Plots
         new_img = HD_Utility.create_concatenated_image(img1, img2, img3)
         final_plot = ImageTk.PhotoImage(new_img)
 
