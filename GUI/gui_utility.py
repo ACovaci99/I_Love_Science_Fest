@@ -126,9 +126,11 @@ class GUI_Main_Page:
         scale = float(self.drop_down.get_selected_value())
         img_label = self.label.image
         img_label = ImageTk.getimage(img_label)
+        img_label.save("img_label.png")
 
         # Send the Image to Andrei's Model
         img_heatmap_processed = back_end_run(img_label, scale)
+        img_heatmap_processed.save("Heatmap_processed.png")
 
 
         # Update The Image
@@ -136,9 +138,6 @@ class GUI_Main_Page:
         self.label.configure(image=img_heatmap_processed)
         self.label.image = img_heatmap_processed
 
-        #Save Images
-        img_heatmap_processed.save("Heatmap_processed.png")
-        img_label.save("img_label.png")
 
         # Make a PDF File
         file_name = "Sample PDF.pdf"
@@ -185,6 +184,3 @@ class GUI_Main_Page:
         new_image = self.read_image(self.default_img_path)
         self.label.configure(image=new_image)
         self.label.image = new_image
-
-        # Get New Image From Camera
-        image = capture_img('image_1.png')
