@@ -13,7 +13,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, Image as PlatypusImage, PageBreak, Spacer
 import cv2
 import tkinter as tk
-
+ 
 class HD_Utility:
     # =================================================================== #
     def make_qr(data: str, file_name: str) -> None:
