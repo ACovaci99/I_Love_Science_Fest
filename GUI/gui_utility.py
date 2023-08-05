@@ -6,8 +6,8 @@ from IPython.display import display
 
 import sys
 import os
-sys.path.insert(0, '../ILSF/back_end')  # Replace with the actual path to the other repository
-sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../I_Love_Science_Fest/back_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../I_Love_Science_Fest/front_end')  # Replace with the actual path to the other repository
 
 
 from functions import run_module as back_end_run
@@ -30,7 +30,7 @@ class GUI_Main_Page:
 
     def __init__(self, google_drive_handler):
 
-        self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
+        self.default_img_path = 'D:/github/I_Love_Science_Fest/GUI/vub.png'
         self.google_drive_handler = google_drive_handler
 
         # Begin The Loop
@@ -76,7 +76,7 @@ class GUI_Main_Page:
         self.label_field.pack(side=tk.LEFT)
 
         # Intialize Drop Down Bar
-        json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
+        json_path = "D:/github/I_Love_Science_Fest/GUI/Scales.json"
         json_data = HD_Utility.read_json_file(json_path)
         self.drop_down = DropDownBar(dropdown_frame, json_data)
         self.drop_down.create_dropdown()
@@ -84,7 +84,7 @@ class GUI_Main_Page:
         # End of Loop
         self.root.mainloop()
 
-    def read_image(self, image_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'):
+    def read_image(self, image_path = 'D:/github/I_Love_Science_Fest/GUI/vub.png'):
         # Load the image
         original_image = Image.open(image_path)
 
@@ -132,9 +132,10 @@ class GUI_Main_Page:
 
 
         # Update The Image
-        img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
-        self.label.configure(image=img_heatmap_processed)
-        self.label.image = img_heatmap_processed
+        img_heatmap_processed2 = ImageTk.PhotoImage(img_heatmap_processed)
+        
+        self.label.configure(image=img_heatmap_processed2)
+        self.label.image = img_heatmap_processed2
 
         #Save Images
         img_heatmap_processed.save("Heatmap_processed.png")
@@ -142,7 +143,7 @@ class GUI_Main_Page:
 
         # Make a PDF File
         file_name = "Sample PDF.pdf"
-        HD_Utility.create_pdf(("img_label.png", "1.jpg"), ("This is French", "This is English"), file_name)
+        HD_Utility.create_pdf(("img_label.png", "Heatmap_processed.png"), ("This is French", "This is English"), file_name)
 
         # Upload The File To Google Drive
         file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.pdf'
@@ -187,4 +188,4 @@ class GUI_Main_Page:
         self.label.image = new_image
 
         # Get New Image From Camera
-        image = capture_img('image_1.png')
+        #image = capture_img('image_1.png')

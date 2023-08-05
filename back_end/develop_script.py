@@ -21,7 +21,7 @@ start_time = time.time()
 current_directory = os.getcwd()
 
 
-subdirectory_name = "plots"
+subdirectory_name = "back_end/plots"
 
 # Create the path to the subdirectory
 subdirectory_path = os.path.join(current_directory, subdirectory_name)
@@ -217,7 +217,7 @@ df_vlinder.wind_speed_inca.plot()
 import functions
 
 current_directory = os.getcwd()
-subdirectory_name = "plots"
+subdirectory_name = "back_end/plots"
 # Create the path to the subdirectory
 subdirectory_path = os.path.join(current_directory, subdirectory_name)
 

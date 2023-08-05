@@ -371,7 +371,7 @@ def run_module(image,scale):
     # Calculate the elapsed time
     elapsed_time = end_time - start_time
     print(f"Elapsed time: {elapsed_time} seconds")
-    
+    print(isinstance(final_plot, Image.Image))
     return final_plot
 
 
