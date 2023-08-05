@@ -4,3 +4,11 @@ GUI/client_secrets.json
 client_secrets.json
 GUI/token.json
 GUI/google_drive_initialization_data.json
+
+# Ignore the images
+
+1.jpg
+captured_frame.jpg
+img_label.png
+qr.png
+Sample PDF.pdf
