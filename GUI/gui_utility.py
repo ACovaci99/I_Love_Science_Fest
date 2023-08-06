@@ -10,6 +10,7 @@ sys.path.insert(0, '../ILSF/back_end')  # Replace with the actual path to the ot
 sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the other repository
 
 
+
 from functions import run_module as back_end_run
 from pathlib import Path
 import json
@@ -22,17 +23,20 @@ import json
 import cv2
 
 
+class Paths_Controller:
+    PDF_TEXT_JSON_PATH = '../pdf_texts.json'
+
 
 class GUI_Main_Page:
 
     ROOT_WINDOW_DIM = "1300x700"
     IMAGE_CANVAS_DIM = (1000, 500)
 
-    def __init__(self, google_drive_handler):
+    def __init__(self, google_drive_handler, pdf_texts_json):
 
         self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
         self.google_drive_handler = google_drive_handler
-
+        self.pdf_texts_json = pdf_texts_json
         # Begin The Loop
         self.root = tk.Tk()
 
@@ -146,7 +150,8 @@ class GUI_Main_Page:
 
         # Make a PDF File
         pdf_file_name = "Sample PDF.pdf"
-        HD_Utility.create_pdf(("img_label.png", "1.jpg"), ("This is French", "This is English"), pdf_file_name)
+        pdf_texts = (self.pdf_texts_json['french'], self.pdf_texts_json['english'])
+        HD_Utility.create_pdf(("img_label.png", "1.jpg"), pdf_texts, pdf_file_name)
 
         #################### Server Uploading ###################
         try:

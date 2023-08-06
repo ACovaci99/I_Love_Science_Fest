@@ -18,5 +18,10 @@ try:
 except Exception as e:
     print("Exception:", e)
 
+
+
+# Load Texts JSON
+pdf_texts_json = hd_utility.HD_Utility.read_json_file('pdf_texts.json')
+
 # Load GUI
-gui_utility.GUI_Main_Page(my_drive)
+gui_utility.GUI_Main_Page(my_drive, pdf_texts_json)
