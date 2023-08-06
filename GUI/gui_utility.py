@@ -174,7 +174,6 @@ class GUI_Main_Page:
 
         try:
         # Cat three plots (img1, img2, qr)
-            size = (400, 400)
             img1 = HD_Utility.load_and_resize_image("img_label.png", size)
             img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
             img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)

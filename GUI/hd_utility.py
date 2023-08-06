@@ -136,8 +136,8 @@ class HD_Utility:
 
         # Add image1 at the top of the page
         for img in images_paths:
-            elements.append(PlatypusImage(img, width=2*width/3, height=height/3))  # Adjust the width and height as needed
-            elements.append(Spacer(width, height/10))
+            elements.append(PlatypusImage(img, width=2*width/3, height=height/5))  # Adjust the width and height as needed
+            elements.append(Spacer(width, height/20))
 
         # First, get a style to use for the Paragraph
         styles = getSampleStyleSheet()
