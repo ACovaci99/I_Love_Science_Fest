@@ -13,6 +13,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, Image as PlatypusImage, PageBreak, Spacer
 import cv2
 import tkinter as tk
+import fitz
+
 
 class HD_Utility:
     # =================================================================== #
@@ -167,6 +169,17 @@ class HD_Utility:
             x_offset += img.width
 
         return new_img
+
+    def pdf2jpg(pdf_path, output_filename):
+        # import fitz
+        pdf_file = fitz.open(pdf_path)
+        first_page = pdf_file.load_page(0)
+        first_page_pix = first_page.get_pixmap()
+        first_page_pix.save(output_filename)
+        pdf_file.close()
+        return first_page_pix
+
+
 
 
 class HD_Camera:

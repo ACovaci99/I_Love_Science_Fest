@@ -14,6 +14,7 @@ from GUI import MyGoogleDrive
 # Load Google Drive
 try:
     my_drive = MyGoogleDrive.MyGoogleDrive(initilization_json_path = './GUI/google_drive_initialization_data.json')
+    print()
 except Exception as e:
     print("Exception:", e)
 

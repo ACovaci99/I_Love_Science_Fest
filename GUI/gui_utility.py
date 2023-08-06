@@ -142,16 +142,18 @@ class GUI_Main_Page:
         except Exception as e:
             print("Exception: Andrei's Code Not Working in gui_utility.py")
             print(e)
+            img_heatmap_processed = self.read_image()
 
         # Make a PDF File
-        file_name = "Sample PDF.pdf"
-        HD_Utility.create_pdf(("img_label.png", "1.jpg"), ("This is French", "This is English"), file_name)
+        pdf_file_name = "Sample PDF.pdf"
+        HD_Utility.create_pdf(("img_label.png", "1.jpg"), ("This is French", "This is English"), pdf_file_name)
 
         #################### Server Uploading ###################
         try:
             # Upload The File To Google Drive
-            file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.pdf'
-            file_id = self.google_drive_handler.upload_image(file_name, file_name_in_drive, self.google_drive_handler.folder_id)
+            file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.jpg'
+            HD_Utility.pdf2jpg(pdf_file_name, file_name_in_drive)
+            file_id = self.google_drive_handler.upload_image(file_name_in_drive, file_name_in_drive, self.google_drive_handler.folder_id)
 
             # Create The QR Code
             url = self.google_drive_handler.get_file_url(file_id)
@@ -161,19 +163,22 @@ class GUI_Main_Page:
             print("Exception in gui_utility: Problem With Google Drive: ", e)
 
 
+
         #################### Creating Final Plots ###################
         # Initialize Images before setting:
         size = (400, 400)
         img1 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
-        img2 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
         img3 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
+        img2 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
+
 
         try:
         # Cat three plots (img1, img2, qr)
             size = (400, 400)
             img1 = HD_Utility.load_and_resize_image("img_label.png", size)
-            img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
             img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+            img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
+
         except:
             print("Exception in gui_utility: QR or Heatmap not found.")
 
