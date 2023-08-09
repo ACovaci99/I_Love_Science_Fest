@@ -142,7 +142,7 @@ class GUI_Main_Page:
         img_label.save("img_label.png")
 
         # Make a PDF File
-        file_name = "Sample PDF.pdf"
+        file_name = "Sample_PDF.pdf"
         HD_Utility.create_pdf(("img_label.png", "Heatmap_processed.png"), ("This is French", "This is English"), file_name)
 
         # Upload The File To Google Drive
@@ -151,6 +151,7 @@ class GUI_Main_Page:
 
         # Create The QR Code
         url = self.google_drive_handler.get_file_url(file_id)
+        print(url)
         qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
 
         # Cat three plots (img1, img2, qr)

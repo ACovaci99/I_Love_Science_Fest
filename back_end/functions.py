@@ -154,7 +154,7 @@ def pad_matrix(matrix, r):
 def plot_heatmap(matrix, color, intp, vmin=None, vmax=None):
     heatmap = plt.imshow(matrix, cmap=color, interpolation=intp, vmin=vmin, vmax=vmax)
     colorbar = plt.colorbar(heatmap)
-    plt.show()
+    #plt.show()
     
 
 def create_green_to_blue_cmap():
@@ -307,6 +307,7 @@ def run_module(image,scale):
     plt.figure()
     functions.plot_heatmap(low_res_matrix, cmap, 'nearest',vmin=1, vmax=3)
     plt.show()
+    #plt.close()
 
 
     #cale = int(scale * 20)
