@@ -6,8 +6,8 @@ from IPython.display import display
 
 import sys
 import os
-sys.path.insert(0, '../ILSF/back_end')  # Replace with the actual path to the other repository
-sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../I_Love_Science_Fest/back_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../I_Love_Science_Fest/front_end')  # Replace with the actual path to the other repository
 
 
 
@@ -34,7 +34,7 @@ class GUI_Main_Page:
 
     def __init__(self, google_drive_handler, pdf_texts_json):
 
-        self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
+        self.default_img_path = 'D:/github/I_Love_Science_Fest/GUI/vub.png'
         self.google_drive_handler = google_drive_handler
         self.pdf_texts_json = pdf_texts_json
         # Begin The Loop
@@ -80,7 +80,7 @@ class GUI_Main_Page:
         self.label_field.pack(side=tk.LEFT)
 
         # Intialize Drop Down Bar
-        json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
+        json_path = "D:/github/I_Love_Science_Fest/GUI/Scales.json"
         json_data = HD_Utility.read_json_file(json_path)
         self.drop_down = DropDownBar(dropdown_frame, json_data)
         self.drop_down.create_dropdown()
@@ -88,7 +88,7 @@ class GUI_Main_Page:
         # End of Loop
         self.root.mainloop()
 
-    def read_image(self, image_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'):
+    def read_image(self, image_path = 'D:/github/I_Love_Science_Fest/GUI/vub.png'):
         # Load the image
         original_image = Image.open(image_path)
 
@@ -151,7 +151,7 @@ class GUI_Main_Page:
         # Make a PDF File
         pdf_file_name = "Sample PDF.pdf"
         pdf_texts = (self.pdf_texts_json['french'], self.pdf_texts_json['english'])
-        HD_Utility.create_pdf(("img_label.png", "1.jpg"), pdf_texts, pdf_file_name)
+        HD_Utility.create_pdf(("img_label.png", "Heatmap_processed.png"), pdf_texts, pdf_file_name)
 
         #################### Server Uploading ###################
         try:
@@ -162,7 +162,7 @@ class GUI_Main_Page:
 
             # Create The QR Code
             url = self.google_drive_handler.get_file_url(file_id)
-            qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
+            qr_code_img = HD_Utility.make_qr(data=url, file_name='qr.png')
 
         except Exception as e:
             print("Exception in gui_utility: Problem With Google Drive: ", e)
