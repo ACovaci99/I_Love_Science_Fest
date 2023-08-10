@@ -21,7 +21,7 @@ except Exception as e:
 
 # Load My Server
 try:
-    credentials_json = hd_utility.HD_Utility.read_json_file('./GUI/google_drive_initialization_data.json')
+    credentials_json = hd_utility.HD_Utility.read_json_file('server_initialization_data.json')
     my_server = Server(server_ip= credentials_json["server_ip"],
                         username = credentials_json["username"],
                         port = int(credentials_json["port_number"]) ,

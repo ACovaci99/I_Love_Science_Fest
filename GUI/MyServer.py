@@ -27,7 +27,7 @@ class SFTPClient:
         # Load the private key
         mykey = paramiko.RSAKey(filename=self.private_key_path, password=passphrase)
 
-        print(f"Username: {self.username} | Pass: {passphrase} | Port: {self.port} | IP: {self.server_ip}")
+        # print(f"Username: {self.username} | Pass: {passphrase} | Port: {self.port} | IP: {self.server_ip}")
 
         self.transport.connect(username=self.username, pkey=mykey)
         self.sftp = paramiko.SFTPClient.from_transport(self.transport)
