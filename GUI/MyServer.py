@@ -3,7 +3,10 @@ import datetime
 import paramiko # pip install paramiko
 
 class SFTPClient:
-    def __init__(self, server_ip, username, private_key_path):
+
+
+
+    def __init__(self, server_ip, username, port, private_key_path, passphrase = None):
         '''
         Example Usage:
         sftp = SFTPClient('your_server_ip', 'your_username', 'path_to_your_private_key')
@@ -15,30 +18,56 @@ class SFTPClient:
         print(f"PDF URL: {pdf_url}")
         print(f"Image URL: {jpg_url}")
         '''
-
         self.server_ip = server_ip
+        self.port = port
         self.username = username
-        self.private_key = paramiko.RSAKey(filename=private_key_path)
-        self.client = paramiko.SSHClient()
-        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.client.connect(server_ip, username=username, pkey=self.private_key)
-        self.sftp = self.client.open_sftp()
+        self.private_key_path = private_key_path
+        self.transport = paramiko.Transport((server_ip, port))
+
+        # Load the private key
+        mykey = paramiko.RSAKey(filename=self.private_key_path, password=passphrase)
+
+        print(f"Username: {self.username} | Pass: {passphrase} | Port: {self.port} | IP: {self.server_ip}")
+
+        self.transport.connect(username=self.username, pkey=mykey)
+        self.sftp = paramiko.SFTPClient.from_transport(self.transport)
 
     def create_directory(self):
         dir_name = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        self.current_directory = f'/var/www/{dir_name}'  # adjust this based on where you want to create the directories
+        self.current_directory = f'/var/www/ilsf/pdfs/{dir_name}'  # adjust this based on where you want to create the directories
+        print("[Create Directory]: Current Directory: ")
         self.sftp.mkdir(self.current_directory)
         return self.current_directory
 
     def upload_file(self, local_path):
-        remote_path = os.path.join(self.current_directory, os.path.basename(local_path))
+        # remote_path = os.path.join(self.current_directory, os.path.basename(local_path))
+        remote_path = self.current_directory + "/" + os.path.basename(local_path)
         self.sftp.put(local_path, remote_path)
         return remote_path
 
     def get_url(self, remote_path):
-        # you will need to adjust the base URL below to match your server's configuration
-        return f'http://{self.server_ip}/{remote_path}'
+        # Assuming the server hosts files at URLs matching their paths
+        return f'http://{self.server_ip}:{self.port}{remote_path}'
 
     def close_connection(self):
         self.sftp.close()
-        self.client.close()
+        self.transport.close()
+
+    def upload_new_document(self, path_to_file):
+
+        # Create New Directory On Server
+        remote_directory_path_url = self.create_directory()
+        print(f"Created: {remote_directory_path_url}")
+
+        # Upload The File on Server
+        remote_file_path = self.upload_file(path_to_file)
+        print("Uploaded to local path: ", remote_file_path)
+
+        # Get Full Path To File
+        full_path_url = self.get_url(remote_file_path)
+        print("Received Full Path: ", full_path_url)
+
+        # Close Connection
+        self.close_connection()
+
+        return full_path_url

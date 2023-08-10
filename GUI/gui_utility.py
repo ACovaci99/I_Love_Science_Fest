@@ -32,11 +32,13 @@ class GUI_Main_Page:
     ROOT_WINDOW_DIM = "1300x700"
     IMAGE_CANVAS_DIM = (1000, 500)
 
-    def __init__(self, google_drive_handler, pdf_texts_json):
+    def __init__(self, google_drive_handler, pdf_texts_json, server_handler = None):
 
         self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
         self.google_drive_handler = google_drive_handler
         self.pdf_texts_json = pdf_texts_json
+        self.server_handler = server_handler
+
         # Begin The Loop
         self.root = tk.Tk()
 
@@ -154,18 +156,22 @@ class GUI_Main_Page:
         HD_Utility.create_pdf(("img_label.png", "1.jpg"), pdf_texts, pdf_file_name)
 
         #################### Server Uploading ###################
-        try:
-            # Upload The File To Google Drive
-            file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.jpg'
-            HD_Utility.pdf2jpg(pdf_file_name, file_name_in_drive)
-            file_id = self.google_drive_handler.upload_image(file_name_in_drive, file_name_in_drive, self.google_drive_handler.folder_id)
 
-            # Create The QR Code
-            url = self.google_drive_handler.get_file_url(file_id)
-            qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
+        # Create File
+        file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.jpg'
+        HD_Utility.pdf2jpg(pdf_file_name, file_name_in_drive)
 
-        except Exception as e:
-            print("Exception in gui_utility: Problem With Google Drive: ", e)
+        # Upload The File To Google Drive
+        # file_id = self.google_drive_handler.upload_image(file_name_in_drive, file_name_in_drive, self.google_drive_handler.folder_id)
+        # url = self.google_drive_handler.get_file_url(file_id)
+
+        # Upload the File To the Server
+        url = self.server_handler.upload_new_document(path_to_file=file_name_in_drive)
+        print(f"Uploaded File to: {url}")
+
+        # Create The QR Code
+        qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
+        print("Created QR Code")
 
 
 
