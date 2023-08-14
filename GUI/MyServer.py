@@ -23,6 +23,7 @@ class SFTPClient:
         self.username = username
         self.private_key_path = private_key_path
         self.transport = paramiko.Transport((server_ip, port))
+        self.current_directory = f'/var/www/ilsf/images'
 
         # Load the private key
         mykey = paramiko.RSAKey(filename=self.private_key_path, password=passphrase)
@@ -34,7 +35,7 @@ class SFTPClient:
 
     def create_directory(self):
         dir_name = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        self.current_directory = f'/var/www/ilsf/pdfs/{dir_name}'  # adjust this based on where you want to create the directories
+        self.current_directory = f'/var/www/ilsf/images/{dir_name}'  # adjust this based on where you want to create the directories
         print("[Create Directory]: Current Directory: ")
         self.sftp.mkdir(self.current_directory)
         return self.current_directory
@@ -56,16 +57,18 @@ class SFTPClient:
     def upload_new_document(self, path_to_file):
 
         # Create New Directory On Server
-        remote_directory_path_url = self.create_directory()
-        print(f"Created: {remote_directory_path_url}")
+        # remote_directory_path_url = self.create_directory()
+        # print(f"Created: {remote_directory_path_url}")
 
         # Upload The File on Server
         remote_file_path = self.upload_file(path_to_file)
         print("Uploaded to local path: ", remote_file_path)
 
         # Get Full Path To File
-        full_path_url = self.get_url(remote_file_path)
+        # full_path_url = self.get_url(remote_file_path)
+        full_path_url = "https://ilsf.duckdns.org/?image=" + path_to_file
         print("Received Full Path: ", full_path_url)
+
 
         # Close Connection
         self.close_connection()
