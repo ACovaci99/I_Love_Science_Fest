@@ -16,7 +16,7 @@ from pathlib import Path
 import json
 
 from hd_utility import HD_Utility
-from hd_utility import HD_Camera
+# from hd_utility import HD_Camera
 from hd_utility import VideoWindow
 from datetime import datetime
 import json
@@ -165,7 +165,7 @@ class GUI_Main_Page:
         # file_id = self.google_drive_handler.upload_image(file_name_in_drive, file_name_in_drive, self.google_drive_handler.folder_id)
         # url = self.google_drive_handler.get_file_url(file_id)
 
-        # Upload the File To the Server
+        # Upload the JPG File To the Server
         url = self.server_handler.upload_new_document(path_to_file=file_name_in_drive)
         print(f"Uploaded File to: {url}")
 
