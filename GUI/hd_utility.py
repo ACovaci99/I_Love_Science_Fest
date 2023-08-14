@@ -182,32 +182,42 @@ class HD_Utility:
 
 
 
-class HD_Camera:
-    # import cv2
-    def __init__(self):
-        self.vid = cv2.VideoCapture(0)
+# class HD_Camera:
+#     # import cv2
+#     def __init__(self):
+#         self.vid = cv2.VideoCapture(0)
 
-    def camera_read(self):
-        ret, frame = self.vid.read()
-        return frame
+#     def camera_read(self):
+#         ret, frame = self.vid.read()
+#         return frame
 
-    def camera_release(self):
-        self.vid.release()
+#     def camera_release(self):
+#         self.vid.release()
 
 class VideoWindow:
     def __init__(self, root):
         self.root = root
+        self.first_time = True
         self.root.resizable(False, False)
         self.root.overrideredirect(True)
-        self.capture = cv2.VideoCapture(0)
+        self.capture = cv2.VideoCapture(0) # If the camera is not working, change here!
         self.current_frame = None
         self.current_frame_tk = None
         self.canvas = tk.Canvas(root, width=600, height=600)
         self.canvas.pack()
         self.update_frame()
 
+
+    def update_camera_port(self):
+        self.capture = cv2.VideoCapture(1)
+
     def update_frame(self):
         ret, frame = self.capture.read()
+        if(self.first_time):
+            if(frame == None):
+                self.update_camera_port()
+            self.first_time = False
+
         if ret:
             self.current_frame = frame
             image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
