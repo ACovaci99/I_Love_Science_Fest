@@ -293,13 +293,27 @@ def median_filter_custom(image, kernel_size):
     return filtered_image
 
 def run_module(image,scale):
+    res = 18
     # takes in a PIL image and a scale (needs to be a an integer)
-    scale = int(scale)
+    scale = int(scale*2)
     start_time = time.time()
     color_high_res = png_to_image(image)
     low_res = reduce_resolution(color_high_res, 320 , 320)
+    
+    low_res_matrix = png_to_image2(low_res)
+    cmap=functions.create_green_to_blue_cmap()
+    plt.figure()
+    functions.plot_heatmap(low_res_matrix, cmap, 'nearest',vmin=1, vmax=3)
+    plt.show()
+    
     new_=median_filter_custom(low_res, 6)
-    low_res = reduce_resolution(new_, 16 , 16)
+    
+    low_res_matrix = png_to_image2(new_)
+    cmap=functions.create_green_to_blue_cmap()
+    plt.figure()
+    functions.plot_heatmap(low_res_matrix, cmap, 'nearest',vmin=1, vmax=3)
+    plt.show()
+    low_res = reduce_resolution(new_, res , res)
     
     low_res_matrix = png_to_image2(low_res)
     
@@ -312,8 +326,8 @@ def run_module(image,scale):
     #cale = int(scale * 20)
     fracs = functions.count_value_in_kernel2(low_res_matrix, scale)
 
-    rows = 16
-    cols = 16
+    rows = res
+    cols = res
     
     
     current_directory = os.getcwd()

@@ -6,7 +6,7 @@ from PIL import ImageTk, Image
 class Camera:
     def __init__(self):
         # Initialize the camera capture object
-        self.camera = cv2.VideoCapture(0)
+        self.camera = cv2.VideoCapture(1)
 
         # Check if the camera was successfully opened
         if not self.camera.isOpened():
