@@ -12,6 +12,7 @@ img_label.png
 qr.png
 Sample PDF.pdf
 Analysis_*.jpg
+result.jpg
 
 # PyChaches
 back_end/__pycache__/*.pyc

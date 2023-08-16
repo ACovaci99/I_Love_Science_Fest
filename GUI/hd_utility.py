@@ -14,6 +14,8 @@ from reportlab.platypus import Paragraph, Image as PlatypusImage, PageBreak, Spa
 import cv2
 import tkinter as tk
 import fitz
+import numpy as np
+import time
 
 
 class HD_Utility:
@@ -200,7 +202,7 @@ class VideoWindow:
         self.first_time = True
         self.root.resizable(False, False)
         self.root.overrideredirect(True)
-        self.capture = cv2.VideoCapture(0) # If the camera is not working, change here!
+        self.capture = cv2.VideoCapture(1) # If the camera is not working, change here!
         self.current_frame = None
         self.current_frame_tk = None
         self.canvas = tk.Canvas(root, width=600, height=600)
@@ -209,20 +211,18 @@ class VideoWindow:
 
 
     def update_camera_port(self):
-        self.capture = cv2.VideoCapture(1)
+        self.capture = cv2.VideoCapture(0)
 
     def update_frame(self):
         ret, frame = self.capture.read()
-        if(self.first_time):
-            if(frame == None):
-                self.update_camera_port()
-            self.first_time = False
+        # if(self.first_time):
+        #     if((frame == None).all()):
+        #         self.update_camera_port()
+        #     self.first_time = False
 
         if ret:
             image = frame
-            # Save the image to the specified file path
-            name_path ='test.jpg'
-            cv2.imwrite(name_path, image)
+
 
             if not ret:
                 print("Error: Failed to capture an image from the webcam.")
@@ -238,7 +238,7 @@ class VideoWindow:
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             if len(contours) == 0:
-                dummy = Image.open('vub.png')
+                dummy = Image.open('./GUI/vub.png')
                 frame = ImageTk.PhotoImage(dummy)
                 self.current_frame = frame
                 #image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -284,5 +284,8 @@ class VideoWindow:
                 self.canvas.create_image(0, 0, anchor=tk.NW, image=frame)
                 self.canvas.image = frame
                 self.current_frame_tk = frame
+        else:
+            print("[Camera Not Detected!]")
+            self.update_camera_port()
 
         self.root.after(10, self.update_frame)  # refresh frame every 10 ms
