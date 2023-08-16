@@ -71,6 +71,6 @@ class SFTPClient:
 
 
         # Close Connection
-        self.close_connection()
+        #self.close_connection()
 
         return full_path_url
