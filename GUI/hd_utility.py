@@ -223,11 +223,6 @@ class VideoWindow:
         if ret:
             image = frame
 
-
-            if not ret:
-                print("Error: Failed to capture an image from the webcam.")
-                return None
-
             # Convert the image to grayscale to get rid of colors and their confusion
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
