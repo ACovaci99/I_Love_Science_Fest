@@ -25,7 +25,7 @@ try:
     my_server = Server(server_ip= credentials_json["server_ip"],
                         username = credentials_json["username"],
                         port = int(credentials_json["port_number"]) ,
-                        private_key_path = credentials_json["public_key_folder_path"],
+                        private_key_path = credentials_json["private_key_folder_path"],
                         passphrase= credentials_json["pass"])
     print()
 except Exception as e:
