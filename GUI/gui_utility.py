@@ -6,8 +6,8 @@ from IPython.display import display
 
 import sys
 import os
-sys.path.insert(0, '../ILSF/back_end')  # Replace with the actual path to the other repository
-sys.path.insert(0, '../ILSF/front_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../I_Love_Science_Fest/back_end')  # Replace with the actual path to the other repository
+sys.path.insert(0, '../I_Love_Science_Fest/front_end')  # Replace with the actual path to the other repository
 
 
 
@@ -34,7 +34,7 @@ class GUI_Main_Page:
 
     def __init__(self, google_drive_handler, pdf_texts_json, server_handler = None):
 
-        self.default_img_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'
+        self.default_img_path = 'GUI/vub.png'
         self.google_drive_handler = google_drive_handler
         self.pdf_texts_json = pdf_texts_json
         self.server_handler = server_handler
@@ -82,7 +82,7 @@ class GUI_Main_Page:
         self.label_field.pack(side=tk.LEFT)
 
         # Intialize Drop Down Bar
-        json_path = "G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\Scales.json"
+        json_path = "GUI/Scales.json"
         json_data = HD_Utility.read_json_file(json_path)
         self.drop_down = DropDownBar(dropdown_frame, json_data)
         self.drop_down.create_dropdown()
@@ -90,7 +90,7 @@ class GUI_Main_Page:
         # End of Loop
         self.root.mainloop()
 
-    def read_image(self, image_path = 'G:\\005 - GitRepositories\\1 - Not Updated on Git\\ILSF\\GUI\\vub.png'):
+    def read_image(self, image_path = 'GUI/vub.png'):
         # Load the image
         original_image = Image.open(image_path)
 
