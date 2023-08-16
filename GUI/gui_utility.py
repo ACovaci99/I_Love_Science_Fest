@@ -153,7 +153,7 @@ class GUI_Main_Page:
         # Make a PDF File
         pdf_file_name = "Sample PDF.pdf"
         pdf_texts = (self.pdf_texts_json['french'], self.pdf_texts_json['english'])
-        HD_Utility.create_pdf(("img_label.png", "1.jpg"), pdf_texts, pdf_file_name)
+        HD_Utility.create_pdf(("img_label.png", "Heatmap_processed.png"), pdf_texts, pdf_file_name)
 
         #################### Server Uploading ###################
 
