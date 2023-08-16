@@ -247,7 +247,7 @@ class VideoWindow:
         self.root = root
         self.root.resizable(False, False)
         self.root.overrideredirect(True)
-        self.capture = cv2.VideoCapture(1)
+        self.capture = cv2.VideoCapture(0)
         self.current_frame = None
         self.current_frame_tk = None
         self.canvas = tk.Canvas(root, width=600, height=600)

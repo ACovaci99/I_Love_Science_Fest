@@ -293,7 +293,7 @@ def median_filter_custom(image, kernel_size):
     return filtered_image
 
 def run_module(image,scale):
-    res = 18
+    res = 18*2
     # takes in a PIL image and a scale (needs to be a an integer)
     scale = int(scale*2)
     start_time = time.time()
