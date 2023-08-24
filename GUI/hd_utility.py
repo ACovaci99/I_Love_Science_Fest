@@ -155,7 +155,7 @@ class HD_Utility:
 
     def load_and_resize_image(path, size):
         img = Image.open(path)
-        img = img.resize(size, Image.ANTIALIAS)
+        img = img.resize(size) #, Image.ANTIALIAS)
         return img
 
     def create_concatenated_image(img1, img2, img3):

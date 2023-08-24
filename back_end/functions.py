@@ -294,12 +294,13 @@ def median_filter_custom(image, kernel_size):
 
 def run_module(image,scale):
     # takes in a PIL image and a scale (needs to be a an integer)
+    res = 18
     scale = int(scale)
     start_time = time.time()
     color_high_res = png_to_image(image)
     low_res = reduce_resolution(color_high_res, 320 , 320)
     new_=median_filter_custom(low_res, 6)
-    low_res = reduce_resolution(new_, 16 , 16)
+    low_res = reduce_resolution(new_, res , res)
     
     low_res_matrix = png_to_image2(low_res)
     
@@ -312,8 +313,8 @@ def run_module(image,scale):
     #cale = int(scale * 20)
     fracs = functions.count_value_in_kernel2(low_res_matrix, scale)
 
-    rows = 16
-    cols = 16
+    rows = res
+    cols = res
     
     
     current_directory = os.getcwd()
