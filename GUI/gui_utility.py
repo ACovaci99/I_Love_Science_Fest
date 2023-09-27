@@ -63,29 +63,75 @@ class GUI_Main_Page:
         button_frame = tk.Frame(self.root , pady=30)
         self.btn_retake     = CustomButton(button_frame, text = "Retake", state =  self.__get_button_status__(False), command = self.action_retake)
         self.btn_capture    = CustomButton(button_frame, text = "Capture", state = self.__get_button_status__(True), command = self.action_capture)
-        self.btn_submit     = CustomButton(button_frame, text = "Submit", state = self.__get_button_status__(False), command = self.action_submit)
+        #self.btn_submit     = CustomButton(button_frame, text = "Submit", state = self.__get_button_status__(False), command = self.action_submit)
         self.close_extra    = CustomButton(button_frame, text = "Close Extra", state = self.__get_button_status__(True), command = self.action_close_extra_pages)
+        self.btn_send_picture = CustomButton(
+        button_frame, 
+        text="Calculate", 
+        state=self.__get_button_status__(False), 
+        command=self.send_picture_to_server
+        )
+        
+        self.btn_process_display = CustomButton(
+        button_frame, 
+        text="Save", 
+        state=self.__get_button_status__(False), 
+        command=self.process_and_display_image
+        )
 
         self.btn_capture.pack(side=tk.LEFT, padx=(10, 10))
         self.btn_retake.pack(side=tk.LEFT, padx=(0, 10))
-        self.btn_submit.pack(side=tk.LEFT, padx=(0, 10))
+        #self.btn_submit.pack(side=tk.LEFT, padx=(0, 10))        
+        self.btn_send_picture.pack(side=tk.LEFT, padx=(0, 10))
+        self.btn_process_display.pack(side=tk.LEFT, padx=(0, 10))
         self.close_extra.pack(side=tk.LEFT, padx=(0, 10))
         button_frame.pack()
 
 
-        # Dropdown Frame:
-        dropdown_frame = tk.Frame(self.root)
-        dropdown_frame.pack(pady=10)
-
-        # Create Label Field
-        self.label_field = tk.Label(dropdown_frame, text="Choose Scale: ")
-        self.label_field.pack(side=tk.LEFT)
-
-        # Intialize Drop Down Bar
-        json_path = "GUI/Scales.json"
-        json_data = HD_Utility.read_json_file(json_path)
-        self.drop_down = DropDownBar(dropdown_frame, json_data)
-        self.drop_down.create_dropdown()
+# =============================================================================
+#         # Dropdown Frame:
+#         dropdown_frame = tk.Frame(self.root)
+#         dropdown_frame.pack(pady=10)
+# 
+#         # Create Label Field
+#         self.label_field = tk.Label(dropdown_frame, text="Choose Scale: ")
+#         self.label_field.pack(side=tk.LEFT)
+# 
+#         # Intialize Drop Down Bar
+#         json_path = "GUI/Scales.json"
+#         json_data = HD_Utility.read_json_file(json_path)
+#         self.drop_down = DropDownBar(dropdown_frame, json_data)
+#         self.drop_down.create_dropdown()
+# =============================================================================
+        
+        
+        # Dropdown Frame 1:
+        dropdown_frame1 = tk.Frame(self.root)
+        dropdown_frame1.pack(pady=10, padx=(300, 0), side=tk.LEFT)
+        
+        # Create Label Field for Dropdown 1
+        self.label_field1 = tk.Label(dropdown_frame1, text="Choose Scale: ")
+        self.label_field1.pack(side=tk.LEFT)
+        
+        # Initialize Drop Down Bar for Dropdown 1
+        json_path1 = "GUI/Scales.json"
+        json_data1 = HD_Utility.read_json_file(json_path1)
+        self.drop_down1 = DropDownBar(dropdown_frame1, json_data1)
+        self.drop_down1.create_dropdown()
+        
+        # Dropdown Frame 2:
+        dropdown_frame2 = tk.Frame(self.root)
+        dropdown_frame2.pack(pady=10, padx=(250, 0), side=tk.LEFT)
+        
+        # Create Label Field for Dropdown 2
+        self.label_field2 = tk.Label(dropdown_frame2, text="Mode: ")
+        self.label_field2.pack(side=tk.LEFT)
+        
+        # Initialize Drop Down Bar for Dropdown 2
+        json_path2 = "GUI/Modes.json"  # Change this path if you're pulling from a different file
+        json_data2 = HD_Utility.read_json_file(json_path2)
+        self.drop_down2 = DropDownBar(dropdown_frame2, json_data2)
+        self.drop_down2.create_dropdown()
 
         # End of Loop
         self.root.mainloop()
@@ -108,7 +154,9 @@ class GUI_Main_Page:
     def __change_buttons_status__(self, capturing):
         self.btn_capture.config(state = self.__get_button_status__(capturing))
         self.btn_retake.config(state = self.__get_button_status__(not capturing))
-        self.btn_submit.config(state = self.__get_button_status__(not capturing))
+        #self.btn_submit.config(state = self.__get_button_status__(not capturing))
+        self.btn_send_picture.config(state = self.__get_button_status__(not capturing))
+        self.btn_process_display.config(state = self.__get_button_status__(capturing))
 
     def action_capture(self):
         self.__change_buttons_status__(capturing = False)
@@ -137,7 +185,7 @@ class GUI_Main_Page:
         #################### Image Processing ###################
         try:
             # Send the Image to Andrei's Model
-            img_heatmap_processed = back_end_run(img_label, scale)
+            img_heatmap_processed = back_end_run(img_label, scale,'a')
             img_heatmap_processed.save("Heatmap_processed.png")
 
 
@@ -221,3 +269,87 @@ class GUI_Main_Page:
         new_image = self.read_image(self.default_img_path)
         self.label.configure(image=new_image)
         self.label.image = new_image
+        
+        
+        
+        
+        
+        
+    def send_picture_to_server(self):
+        """Function to send the image to the server and receive a heatmap in response."""
+        self.__change_buttons_status__(capturing=True)
+        
+        # Get Panel data
+        scale = float(self.drop_down1.get_selected_value())
+        img_label = self.label.image
+        img_label = ImageTk.getimage(img_label)
+        img_label.save("img_label.png")
+    
+        try:
+            # Send the Image to Andrei's Model
+            img_heatmap_processed = back_end_run(img_label, scale,"a")
+            img_heatmap_processed.save("Heatmap_processed.png")
+            
+            # Update The Image
+            img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
+            self.label.configure(image=img_heatmap_processed)
+            self.label.image = img_heatmap_processed
+        except Exception as e:
+            print("Exception: Andrei's Code Not Working in gui_utility.py")
+            print(e)
+            img_heatmap_processed = self.read_image()
+    
+        return img_heatmap_processed
+
+    def process_and_display_image(self):
+        img_heatmap_processed = Image.open("Heatmap_processed.png")
+        img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
+        
+        """Function to process and display the heatmap, create QR code, and display final plots."""
+        
+        # Make a PDF File
+        pdf_file_name = "Sample PDF.pdf"
+        pdf_texts = (self.pdf_texts_json['french'], self.pdf_texts_json['english'], self.pdf_texts_json['dutch'])
+        HD_Utility.create_pdf(("img_label.png", "Heatmap_processed.png"), pdf_texts, pdf_file_name)
+        
+        # Server Uploading
+        file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.jpg'
+        HD_Utility.pdf2jpg(pdf_file_name, file_name_in_drive)
+        url = self.server_handler.upload_new_document(path_to_file=file_name_in_drive)
+        print(f"Uploaded File to: {url}")
+        
+        size = (400, 400)
+        img1 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
+        img3 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
+        img2 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
+
+
+        try:
+        # Cat three plots (img1, img2, qr)
+            img1 = HD_Utility.load_and_resize_image("img_label.png", size)
+            img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+            img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
+
+        except:
+            print("Exception in gui_utility: QR or Heatmap not found.")
+
+        # Merge Plots
+        new_img = HD_Utility.create_concatenated_image(img1, img2, img3)
+        final_plot = ImageTk.PhotoImage(new_img)
+        
+        new_window = tk.Toplevel(self.root)
+        label = tk.Label(new_window, image=final_plot)
+        label.image = final_plot  # keep a reference to the image
+        label.pack()
+        self.new_created_windows.append(new_window)
+
+        # Update The Image
+        final_plot = ImageTk.PhotoImage(new_img)
+        self.label.configure(image=final_plot)
+        self.label.image = final_plot
+        
+    
+    # Example of how to use the functions:
+    # img_heatmap_processed = self.send_picture_to_server()
+    # self.process_and_display_image(img_heatmap_processed)
+

@@ -37,7 +37,7 @@ def count_value_in_kernel2(matrix, radius):
     kernel_area = (1+radius*2)*(1+radius*2)
 
 
-    sub_rad = int(radius / 5) #250 m
+    sub_rad = int(radius / 4) #250 m
     sub_kernel = generate_circle_kernel(sub_rad)
     kernel_sub_area = (1+sub_rad*2)*(1+sub_rad*2)
 
@@ -151,8 +151,11 @@ def pad_matrix(matrix, r):
 
 
 
-def plot_heatmap(matrix, color, intp, vmin=None, vmax=None):
-    heatmap = plt.imshow(matrix, cmap=color, interpolation=intp, vmin=vmin, vmax=vmax)
+def plot_heatmap(matrix, color, intp, vmin=None, vmax=None, scale=1):
+    # Define the extent for the scaling
+    extent = [0, matrix.shape[1] * scale, matrix.shape[0] * scale, 0]
+    
+    heatmap = plt.imshow(matrix, cmap=color, interpolation=intp, vmin=vmin, vmax=vmax, extent=extent)
     colorbar = plt.colorbar(heatmap)
     plt.show()
     
@@ -292,8 +295,12 @@ def median_filter_custom(image, kernel_size):
 
     return filtered_image
 
-def run_module(image,scale):
+def run_module(image,scale,scenario):
     # takes in a PIL image and a scale (needs to be a an integer)
+    if scenario == "a":
+        time_='2020-09-15 01:00:00'
+    elif  scenario == "b":
+        time_='2020-09-15 14:00:00'
     res = 18
     scale = int(scale)
     start_time = time.time()
@@ -338,7 +345,7 @@ def run_module(image,scale):
     df_reff.loc[0,'GREEN'] = 1.0
     df_reff['Station']= 'vlinder05'
 
-    time_='2020-09-15 01:00:00'
+    
     df_vlinder = pd.read_csv(os.path.join(subdirectory_path,'big_2020_09.csv' ))
     df_vlinder=df_vlinder.rename(columns={"short_wave_from_sky_1hour":"SHORT_WAVE_FROM_SKY_1HOUR","net_radiation_1hour":"NET_RADIATION_1HOUR"})
     df_vlinder=df_vlinder[df_vlinder['Vlinder']=='vlinder05']
@@ -358,11 +365,12 @@ def run_module(image,scale):
 
     T_reff=model.predict(df_reff)
     arr = np.array(temp)
-    arr= arr - T_reff
+    #arr= arr - T_reff
+    T_mid = np.mean(arr)
     xd=np.reshape(arr,(rows,cols))
     fig = plt.figure()
-    functions.plot_heatmap(xd, 'plasma', 'bilinear',vmin=0, vmax=6)
-    plt.title('Urban Heat Island Intensity Ghent at t= 01 h')
+    functions.plot_heatmap(xd, 'plasma', 'bilinear', vmin=15, vmax=21, scale= 1000/scale)
+    plt.title('Urban Heat Island Intensity at t= 01 h, average T = {:.1f}°C'.format(T_mid))
     plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
     final_plot = plt_to_image(fig)
     plt.close()
@@ -395,5 +403,109 @@ def plt_to_image(fig):
     image_rgb = image.convert("RGB")
     
     return image_rgb
+
+# =============================================================================
+# def run_module_ANN(image,scale):
+#     from tensorflow.keras.models import load_model
+#     from joblib import load
+# 
+#     
+#     # takes in a PIL image and a scale (needs to be a an integer)
+#     res = 18
+#     scale = int(scale)
+#     start_time = time.time()
+#     color_high_res = png_to_image(image)
+#     low_res = reduce_resolution(color_high_res, 320 , 320)
+#     new_=median_filter_custom(low_res, 6)
+#     low_res = reduce_resolution(new_, res , res)
+#     
+#     low_res_matrix = png_to_image2(low_res)
+#     
+#     cmap=functions.create_green_to_blue_cmap()
+#     plt.figure()
+#     functions.plot_heatmap(low_res_matrix, cmap, 'nearest',vmin=1, vmax=3)
+#     plt.show()
+# 
+# 
+#     #cale = int(scale * 20)
+#     fracs = functions.count_value_in_kernel2(low_res_matrix, scale)
+# 
+#     rows = res
+#     cols = res
+#     
+#     
+#     current_directory = os.getcwd()
+#     subdirectory_name = "back_end/plots"
+#     # Create the path to the subdirectory
+#     subdirectory_path = os.path.join(current_directory, subdirectory_name)
+# 
+#     col_to_keep = ['ALT', 'WATER', 'GREEN', 'IMPERVIOUS', 'WATER_1000', 'GREEN_1000',
+#            'IMPERVIOUS_1000', 'SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
+#            'rel_humid_inca', 'wind_speed_inca', 'max_t2m_inca', 'min_t2m_inca']
+# 
+#     df = pd.DataFrame(fracs)
+#     df=df.rename(columns={0:'WATER_1000', 1:'GREEN_1000', 2:'IMPERVIOUS_1000', 3:'WATER', 4:'GREEN', 5:'IMPERVIOUS',})
+# 
+#     df_reff=df.head(1).copy()
+#     df_reff.loc[0,'WATER_1000'] = 0.0
+#     df_reff.loc[0,'WATER'] = 0.0
+#     df_reff.loc[0,'IMPERVIOUS_1000'] = 0.0
+#     df_reff.loc[0,'IMPERVIOUS'] = 0.0
+#     df_reff.loc[0,'GREEN_1000'] = 1.0
+#     df_reff.loc[0,'GREEN'] = 1.0
+#     df_reff['Station']= 'vlinder05'
+# 
+#     time_='2020-09-15 01:00:00'
+#     df_vlinder = pd.read_csv(os.path.join(subdirectory_path,'big_2020_09.csv' ))
+#     df_vlinder=df_vlinder.rename(columns={"short_wave_from_sky_1hour":"SHORT_WAVE_FROM_SKY_1HOUR","net_radiation_1hour":"NET_RADIATION_1HOUR"})
+#     df_vlinder=df_vlinder[df_vlinder['Vlinder']=='vlinder05']
+#     df_vlinder=df_vlinder[df_vlinder['datetime']==time_]
+#     df_vlinder=df_vlinder[['ALT','SHORT_WAVE_FROM_SKY_1HOUR', 't2m_inca',
+#            'rel_humid_inca', 'wind_speed_inca', 'max_t2m_inca', 'min_t2m_inca','Vlinder']]
+#     df['Station']= 'vlinder05'
+#     df=df.merge(df_vlinder,how='left',left_on='Station',  right_on='Vlinder')
+#     df_reff=df_reff.merge(df_vlinder,how='left',left_on='Station',  right_on='Vlinder')
+#     df=df[col_to_keep]
+#     df_reff=df_reff[col_to_keep]
+#     #dftrain.pop('station')
+#     col_to_scale=['ALT','t2m_inca', 'rel_humid_inca', 'wind_speed_inca',
+#                   'SHORT_WAVE_FROM_SKY_1HOUR','max_t2m_inca', 'min_t2m_inca'] 
+#     main_scaler = joblib.load(os.path.join(subdirectory_path,"minmax_scaler_main.joblib"))
+#     df[col_to_scale]=main_scaler.transform(df[col_to_scale])
+#     
+#     
+# 
+#     from tensorflow.keras.models import load_model
+#     model = load_model(os.path.join(subdirectory_path, "my_ANN_model.h5"))
+#     temp=model.predict(df)
+#     
+#     
+#     temp_scaler = joblib.load(os.path.join(subdirectory_path,"minmax_scaler_temp.joblib"))
+#     temp.reshape(-1, 1) #returns a numpy array
+#     temp=temp_scaler.inverse_transform(temp)
+#     
+# 
+#     T_reff=model.predict(df_reff)
+#     arr = np.array(temp)
+#     #arr= arr - T_reff
+#     T_mid = np.mean(arr)
+#     xd=np.reshape(arr,(rows,cols))
+#     fig = plt.figure()
+#     functions.plot_heatmap(xd, 'plasma', 'bilinear', vmin=16, vmax=21, scale= 1000/scale)
+#     plt.title('Urban Heat Island Intensity at t= 01 h, average T = {:.1f}°C'.format(T_mid))
+#     plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
+#     final_plot = plt_to_image(fig)
+#     plt.close()
+# 
+#     end_time = time.time()
+# 
+#     # Calculate the elapsed time
+#     elapsed_time = end_time - start_time
+#     print(f"Elapsed time: {elapsed_time} seconds")
+#     
+#     return final_plot
+# =============================================================================
+
+
 
 
