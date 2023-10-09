@@ -258,11 +258,13 @@ def png_to_image2(image):
             #print(diff_rg, diff_rg, r, g, b)
 
             # Categorize the pixel based on the differences
-            if diff_gb > 30:
+            if diff_gb > 20:
                 if b > max(r, g):
                     matrix[y, x] = 1    # Blue
-                else:
+                elif g > max(r, b):
                     matrix[y, x] = 2    # Green
+                else:
+                    matrix[y, x] = 3    # Black
             else:
                 matrix[y, x] = 3          # Black
 

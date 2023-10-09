@@ -16,6 +16,7 @@ from pathlib import Path
 import json
 
 from hd_utility import HD_Utility
+from pdf_maker import pdf_func
 # from hd_utility import HD_Camera
 from hd_utility import VideoWindow
 from datetime import datetime
@@ -32,10 +33,10 @@ class GUI_Main_Page:
     ROOT_WINDOW_DIM = "1300x700"
     IMAGE_CANVAS_DIM = (1000, 500)
 
-    def __init__(self, google_drive_handler, pdf_texts_json, server_handler = None):
+    def __init__(self, pdf_texts_json, server_handler = None):
 
         self.default_img_path = 'GUI/vub.png'
-        self.google_drive_handler = google_drive_handler
+        #self.google_drive_handler = google_drive_handler
         self.pdf_texts_json = pdf_texts_json
         self.server_handler = server_handler
 
@@ -185,7 +186,7 @@ class GUI_Main_Page:
         #################### Image Processing ###################
         try:
             # Send the Image to Andrei's Model
-            img_heatmap_processed = back_end_run(img_label, scale,'a')
+            img_heatmap_processed = back_end_run(img_label, scale,'b')
             img_heatmap_processed.save("Heatmap_processed.png")
 
 
@@ -308,6 +309,7 @@ class GUI_Main_Page:
         """Function to process and display the heatmap, create QR code, and display final plots."""
         
         # Make a PDF File
+        pdf_func('GUI/vub.png','GUI/vub.png','GUI/vub.png','GUI/vub.png')
         pdf_file_name = "Sample PDF.pdf"
         pdf_texts = (self.pdf_texts_json['french'], self.pdf_texts_json['english'], self.pdf_texts_json['dutch'])
         HD_Utility.create_pdf(("img_label.png", "Heatmap_processed.png"), pdf_texts, pdf_file_name)
