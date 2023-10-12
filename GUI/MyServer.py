@@ -66,7 +66,7 @@ class SFTPClient:
 
         # Get Full Path To File
         # full_path_url = self.get_url(remote_file_path)
-        full_path_url = "https://ilsf.duckdns.org/?image=" + path_to_file
+        full_path_url = "https://urbanclimate.be/?image=" + path_to_file
         print("Received Full Path: ", full_path_url)
 
 
