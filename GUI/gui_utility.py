@@ -23,7 +23,6 @@ from datetime import datetime
 import json
 import cv2
 
-
 class Paths_Controller:
     PDF_TEXT_JSON_PATH = '../pdf_texts.json'
 
@@ -375,7 +374,7 @@ class GUI_Main_Page:
         try:
         # Cat three plots (img1, img2, qr)
             img1 = HD_Utility.load_and_resize_image("img_label.png", size)
-            img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+            img3 = HD_Utility.load_and_resize_image('qr.png', (400,400))
             img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
 
         except:
@@ -385,7 +384,7 @@ class GUI_Main_Page:
         game = str(self.drop_down2.get_selected_value())
         if game == 'a': # this is the regular game 
             img1 = HD_Utility.load_and_resize_image("ideal_city/ideal_city_heatmap.png", size)
-            img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+            img3 = HD_Utility.load_and_resize_image('qr.png', (400,400))
             img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
         else:
             img1 = HD_Utility.load_and_resize_image("img_label.png", size)

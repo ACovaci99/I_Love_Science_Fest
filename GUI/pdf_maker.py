@@ -67,7 +67,7 @@ def pdf_func(im1,im2,im3,im4,game):
         # Add text at the bottom
         with Drawing() as draw:
             draw.font_size = 20
-            bottom_text = "Additional text at the bottom."
+            bottom_text = " "
             text_width = draw.get_font_metrics(base, bottom_text).text_width
             draw.text(int((width - text_width) // 2), height - 10, bottom_text)
             draw(base)

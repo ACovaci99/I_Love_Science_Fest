@@ -370,24 +370,28 @@ def run_module(image,scale,scenario,other):
 
     T_reff=model.predict(df_reff)
     arr = np.array(temp)
+    
+    np.save('my_array.npy',arr)
     #arr= arr - T_reff
     T_mid = np.mean(arr)
     xd=np.reshape(arr,(rows,cols))
     if other ==  'a':
-        fig = plt.figure()
+        fig, ax = plt.subplots(figsize=(6,6))
         functions.plot_heatmap(xd, 'plasma', 'bilinear', vmin=15, vmax=20.5, scale= 1000/scale) #
         plt.title('Your city, night, average T = {:.1f}°C'.format(T_mid))
         plt.axis('off')
-        plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
+        plt.tight_layout()
+        plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png', bbox_inches='tight', pad_inches=0)
         final_plot = plt_to_image(fig)
         plt.close()
     else:
-        fig = plt.figure()
+        fig, ax = plt.subplots(figsize=(6,6))
         functions.plot_heatmap(xd, 'plasma', 'bilinear', scale= 1000/scale) #
         title =  title + ', average T = {:.1f}°C'.format(T_mid)
         plt.title(title)
         plt.axis('off')
-        plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
+        plt.tight_layout()
+        plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png', bbox_inches='tight', pad_inches=0)
         final_plot = plt_to_image(fig)
         plt.close()
 
