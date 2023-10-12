@@ -3,6 +3,7 @@ from PIL import ImageTk, Image
 from Button import CustomButton
 from DropDownBar import DropDownBar
 from IPython.display import display
+from screeninfo import get_monitors
 
 import sys
 import os
@@ -28,9 +29,15 @@ class Paths_Controller:
 
 
 class GUI_Main_Page:
-
-    ROOT_WINDOW_DIM = "1300x700"
-    IMAGE_CANVAS_DIM = (1000, 500)
+    resolution = "1300x700"
+    monitors = get_monitors()
+    if len(monitors) > 1:
+        second_monitor = monitors[1]  # Index 1 because 0 is the first monitor
+        resolution = str(second_monitor.width)+"x"+str(second_monitor.height)
+    else:
+        print("Second monitor not found.")
+    ROOT_WINDOW_DIM = resolution
+    IMAGE_CANVAS_DIM = (1400, 700)
 
     def __init__(self, pdf_texts_json, server_handler = None):
 
@@ -180,6 +187,7 @@ class GUI_Main_Page:
         # Get New Image From Camera
         if self.video_capture.current_frame is not None:
             new_image = self.video_capture.current_frame_tk
+        
 
         # Update The Image
         self.label.configure(image=new_image)
@@ -366,7 +374,7 @@ class GUI_Main_Page:
         qr_code_img = HD_Utility.make_qr(data=url2, file_name=f'qr.png')
         print("Created QR Code")
         
-        size = (400, 400)
+        size = (700, 700)
         img1 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
         img3 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
         img2 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
@@ -395,7 +403,31 @@ class GUI_Main_Page:
 
 
         # Merge Plots
-        new_img = HD_Utility.create_concatenated_image(img1, img2, img3)
+        def create_concatenated_image_with_bg(images, bg_color=(255, 255, 255)):
+        
+            # Get total width and the maximum height of all images to be concatenated
+            total_width = sum(image.width for image in images)
+            max_height = max(image.height for image in images)
+        
+            # Create a new image with white background
+            new_image = Image.new('RGB', (total_width, max_height), bg_color)
+        
+            # Paste each image next to each other
+            x_offset = 0
+            for image in images:
+                y_offset = (max_height - image.height) // 2  # Center vertically
+                new_image.paste(image, (x_offset, y_offset), mask=image if image.mode == 'RGBA' else None)
+                x_offset += image.width
+        
+            return new_image
+
+        # Example usage:
+        images = [img1, img2, img3]
+        concatenated_image = create_concatenated_image_with_bg(images)
+        
+        
+        #new_img = HD_Utility.create_concatenated_image(img1, img2, img3)
+        new_img = concatenated_image
         final_plot = ImageTk.PhotoImage(new_img)
         
         new_window = tk.Toplevel(self.root)
