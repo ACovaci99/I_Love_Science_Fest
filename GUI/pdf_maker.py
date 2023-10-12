@@ -75,3 +75,76 @@ def pdf_func(im1,im2,im3,im4,game):
         # Save as PDF
         base.format = 'pdf'
         base.save(filename='output3.pdf')
+
+def create_image_jpg(citymap_img,heatmap_img,game,filename="grid.jpg"):
+    ilsf_banner = "ideal_city/ILSF_banner_800.png"
+    canvas_width=800
+    image_width=400
+    image_height=400
+    subtitles =[]
+    #array of images
+    if game:
+        images=["ideal_city/border_ideal_demo_city.png",
+                 "ideal_city/ideal_city_heatmap.png",
+                citymap_img,
+                heatmap_img]
+        canvas_height=1120
+        title = "Koel je stad af - Rafraîchissez votre ville"
+        subtitles=["Voorbeeldstad - Ville d'exemple","Mijn aanpassingen - Mes modifications"]
+
+    else:
+        images = [citymap_img,heatmap_img]
+        canvas_height=680
+        title = "Mijn droomstad - La ville de mes rêves"
+
+    # Create a blank white canvas as base
+    with Image(width=canvas_width, height=canvas_height, background=Color('white')) as base:
+        # First add the title
+        offset=100
+        with Drawing() as draw:
+            draw.font = 'fonts/Roboto-Regular.ttf'
+            draw.font_size = 40
+            draw.text_alignment = 'center'
+            draw.text(400, 50, title)
+            draw(base)
+        # Then the first subtitle if there is one
+        if len(subtitles) > 0:
+            with Drawing() as draw:
+                draw.font = 'fonts/Roboto-Regular.ttf'
+                draw.font_size = 20
+                draw.text_alignment = 'center'
+                draw.text(400, 100, subtitles[0])
+                draw(base)
+            offset = 120
+        # add the two images
+        for i in range(2):
+            with Image(filename=images[i]) as img:
+                img.resize(image_width, image_height)
+                base.composite(img, left=image_width * (i % 2), top=offset+image_height * (i // 2))
+
+        # Then the second subtitle if there is one
+        if len(subtitles) > 1:
+            offset=offset + 430
+            with Drawing() as draw:
+                draw.font = 'fonts/Roboto-Regular.ttf'
+                draw.font_size = 20
+                draw.text_alignment = 'center'
+                draw.text(400, offset, subtitles[1])
+                draw(base)
+            offset = offset + 20
+
+            for i in range(2):
+                with Image(filename=images[i+2]) as img:
+                    img.resize(image_width, image_height)
+                    base.composite(img, left=image_width * (i % 2), top=offset+image_height * (i // 2))
+        # Then the ILSF banner
+        with Image(filename=ilsf_banner) as img:
+            img.resize(canvas_width, 130)
+            base.composite(img, left=0, top=canvas_height-130)
+
+        base.save(filename=filename)
+
+#Test the layout for the game scenario with 4 images: the demo city, the demo heat map, the new city and the new heatmap
+#create_image_jpg("result.jpg","Heatmap_processed.png",True,"grid_game.jpg")
+#create_image_jpg("result.jpg","Heatmap_processed.png",False,"grid.jpg")
+
