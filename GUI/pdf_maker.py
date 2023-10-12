@@ -78,6 +78,7 @@ def pdf_func(im1,im2,im3,im4,game):
 
 def create_image_jpg(citymap_img,heatmap_img,game,filename="grid.jpg"):
     ilsf_banner = "ideal_city/ILSF_banner_800.png"
+    VUB_logo = "ideal_city/all_logo.png" # size: 473 × 130
     canvas_width=800
     image_width=400
     image_height=400
@@ -99,7 +100,7 @@ def create_image_jpg(citymap_img,heatmap_img,game,filename="grid.jpg"):
 
     # Create a blank white canvas as base
     with Image(width=canvas_width, height=canvas_height, background=Color('white')) as base:
-        # First add the title
+        # First add the title and the VUB logo next to it
         offset=100
         with Drawing() as draw:
             draw.font = 'fonts/Roboto-Regular.ttf'
@@ -142,9 +143,14 @@ def create_image_jpg(citymap_img,heatmap_img,game,filename="grid.jpg"):
             img.resize(canvas_width, 130)
             base.composite(img, left=0, top=canvas_height-130)
 
+        # Put the VUB logo at the bottom left corner on top of the banner
+        with Image(filename=VUB_logo) as img:
+            img.resize(236, 65)
+            base.composite(img, left=0, top=canvas_height-65)
+
         base.save(filename=filename)
 
 #Test the layout for the game scenario with 4 images: the demo city, the demo heat map, the new city and the new heatmap
-#create_image_jpg("result.jpg","Heatmap_processed.png",True,"grid_game.jpg")
-#create_image_jpg("result.jpg","Heatmap_processed.png",False,"grid.jpg")
+create_image_jpg("result.jpg","Heatmap_processed.png",True,"grid_game.jpg")
+create_image_jpg("result.jpg","Heatmap_processed.png",False,"grid.jpg")
 
