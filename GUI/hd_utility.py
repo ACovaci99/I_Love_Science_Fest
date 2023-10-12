@@ -16,11 +16,12 @@ import tkinter as tk
 import fitz
 import numpy as np
 import time
+import qrcode
 
 
 class HD_Utility:
     # =================================================================== #
-    def make_qr(data: str, file_name: str) -> None:
+    def make_qr(data: str, file_name: str): # -> None:
         """
         Generate a QR code image and save it to a file.
 
@@ -49,6 +50,7 @@ class HD_Utility:
 
         img = qr.make_image(fill='black', back_color='white')
         img.save(file_name)
+        print('this line of code was run')
         return img
 
 

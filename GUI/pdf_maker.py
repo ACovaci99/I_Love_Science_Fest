@@ -2,10 +2,15 @@ from wand.image import Image
 from wand.drawing import Drawing
 from wand.color import Color
 
-def pdf_func(im1,im2,im3,im4):
+def pdf_func(im1,im2,im3,im4,game):
     # Paths to your image files
     image_paths = [im1,im2,im3,im4]
-    image_texts = ['Cerebral Incubation', 'Epicardiectomy', 'Traumatomy', '.357 Homicide']
+    if game == 'a':
+        image_texts = ['Demo city', 'Demo Heat Map', 'Your city', 'Your Heat Map']
+    else:
+        image_texts = ['Your city', 'Your Heat Map', ' ', ' ']
+    
+    
     
     # Create a blank white canvas as base
     width, height = 800, 1000

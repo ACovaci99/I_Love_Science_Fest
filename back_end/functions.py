@@ -157,7 +157,7 @@ def plot_heatmap(matrix, color, intp, vmin=None, vmax=None, scale=1):
     
     heatmap = plt.imshow(matrix, cmap=color, interpolation=intp, vmin=vmin, vmax=vmax, extent=extent)
     colorbar = plt.colorbar(heatmap)
-    plt.show()
+    colorbar.set_label('Temperature (in °C)')
     
 
 def create_green_to_blue_cmap():
@@ -297,13 +297,21 @@ def median_filter_custom(image, kernel_size):
 
     return filtered_image
 
-def run_module(image,scale,scenario):
+def run_module(image,scale,scenario,other):
     # takes in a PIL image and a scale (needs to be a an integer)
     if scenario == "a":
         time_='2020-09-15 01:00:00'
+        title = 'Summer Night'
     elif  scenario == "b":
         time_='2020-09-15 14:00:00'
+        title = 'Summer day'
+    elif  scenario == "c":
+        time_='2020-09-25 01:00:00' 
+        title = 'Rainy Night'
     res = 18
+    if other == "c":
+        res = 32
+    
     scale = int(scale)
     start_time = time.time()
     color_high_res = png_to_image(image)
@@ -312,11 +320,6 @@ def run_module(image,scale,scenario):
     low_res = reduce_resolution(new_, res , res)
     
     low_res_matrix = png_to_image2(low_res)
-    
-    cmap=functions.create_green_to_blue_cmap()
-    plt.figure()
-    functions.plot_heatmap(low_res_matrix, cmap, 'nearest',vmin=1, vmax=3)
-    plt.show()
 
 
     #cale = int(scale * 20)
@@ -370,12 +373,23 @@ def run_module(image,scale,scenario):
     #arr= arr - T_reff
     T_mid = np.mean(arr)
     xd=np.reshape(arr,(rows,cols))
-    fig = plt.figure()
-    functions.plot_heatmap(xd, 'plasma', 'bilinear', vmin=15, vmax=21, scale= 1000/scale)
-    plt.title('Urban Heat Island Intensity at t= 01 h, average T = {:.1f}°C'.format(T_mid))
-    plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
-    final_plot = plt_to_image(fig)
-    plt.close()
+    if other ==  'a':
+        fig = plt.figure()
+        functions.plot_heatmap(xd, 'plasma', 'bilinear', vmin=15, vmax=20.5, scale= 1000/scale) #
+        plt.title('Your city, night, average T = {:.1f}°C'.format(T_mid))
+        plt.axis('off')
+        plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
+        final_plot = plt_to_image(fig)
+        plt.close()
+    else:
+        fig = plt.figure()
+        functions.plot_heatmap(xd, 'plasma', 'bilinear', scale= 1000/scale) #
+        title =  title + ', average T = {:.1f}°C'.format(T_mid)
+        plt.title(title)
+        plt.axis('off')
+        plt.savefig(os.path.join(subdirectory_path,'output.png'), format='png')
+        final_plot = plt_to_image(fig)
+        plt.close()
 
     end_time = time.time()
 

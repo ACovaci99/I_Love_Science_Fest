@@ -1,5 +1,5 @@
 {
-    "Demo_city": "4",
-    "Demo_neighbourhood" : "8",
-    "Demo_street": "12"
+    "1 block = 250 m": "4",
+    "1 block = 125 m" : "8",
+    "1 block = 62.5 m": "16"
 }

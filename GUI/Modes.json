@@ -1,6 +1,6 @@
 {
     "Game": "a",
-    "Free_build_(night)" : "b",
-    "Free_build_(day)": "c",
-    "Free_build_(rain)": "d"
+    "16x16 Map Bru" : "b",
+    "32x32 Map Bru": "c",
+    "Free build": "d"
 }
