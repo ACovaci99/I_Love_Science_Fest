@@ -17,7 +17,7 @@ from pathlib import Path
 import json
 
 from hd_utility import HD_Utility
-from pdf_maker import pdf_func
+from pdf_maker import create_image_jpg
 # from hd_utility import HD_Camera
 from hd_utility import VideoWindow
 from datetime import datetime
@@ -353,19 +353,9 @@ class GUI_Main_Page:
         
         game = str(self.drop_down2.get_selected_value())
         print(game)
-        if game == 'a':
-            pdf_func('ideal_city/border_ideal_demo_city.png','ideal_city/ideal_city_heatmap.png','result.jpg','Heatmap_processed.png',game)
-        else:
-            pdf_func('result.jpg','Heatmap_processed.png',"GUI/vub.png","GUI/vub.png",game)
-        pdf_file_name = "output3.pdf"
-        #♥pdf_texts = (self.pdf_texts_json['french'], self.pdf_texts_json['english'], self.pdf_texts_json['dutch'])
-        #HD_Utility.create_pdf(("img_label.png", "Heatmap_processed.png"), pdf_texts, pdf_file_name)
-        
-        # Server Uploading
         file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.jpg'
-        file_name_in_drive2 = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}'
-        #file_name_in_drive2 = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}'
-        HD_Utility.pdf2jpg(pdf_file_name, file_name_in_drive)
+        create_image_jpg("result.jpg","Heatmap_processed.png",game=='a',file_name_in_drive)
+
         url = self.server_handler.upload_new_document(path_to_file=file_name_in_drive)
         url2 = url[:-4]
         print(f"Uploaded File to: {url2}")
