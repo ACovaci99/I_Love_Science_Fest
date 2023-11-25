@@ -95,24 +95,6 @@ class GUI_Main_Page:
         button_frame.pack()
 
 
-# =============================================================================
-#         # Dropdown Frame:
-#         dropdown_frame = tk.Frame(self.root)
-#         dropdown_frame.pack(pady=10)
-# 
-#         # Create Label Field
-#         self.label_field = tk.Label(dropdown_frame, text="Choose Scale: ")
-#         self.label_field.pack(side=tk.LEFT)
-# 
-#         # Intialize Drop Down Bar
-#         json_path = "GUI/Scales.json"
-#         json_data = HD_Utility.read_json_file(json_path)
-#         self.drop_down = DropDownBar(dropdown_frame, json_data)
-#         self.drop_down.create_dropdown()
-# =============================================================================
-        
-
-
         # Dropdown Frame 2:
         dropdown_frame2 = tk.Frame(self.root)
         dropdown_frame2.pack(pady=10, padx=(200, 0), side=tk.LEFT)
@@ -197,89 +179,6 @@ class GUI_Main_Page:
         for window in self.new_created_windows:
             window.destroy()
 
-    # def action_submit(self):
-    #     self.__change_buttons_status__(capturing = True)
-
-    #     # Get Panel data
-    #     scale = float(self.drop_down.get_selected_value())
-    #     img_label = self.label.image
-    #     img_label = ImageTk.getimage(img_label)
-    #     img_label.save("img_label.png")
-
-    #     #################### Image Processing ###################
-    #     try:
-    #         # Send the Image to Andrei's Model
-    #         img_heatmap_processed = back_end_run(img_label, scale,'b')
-    #         img_heatmap_processed.save("Heatmap_processed.png")
-
-
-    #         # Update The Image
-    #         img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
-    #         self.label.configure(image=img_heatmap_processed)
-    #         self.label.image = img_heatmap_processed
-    #     except Exception as e:
-    #         print("Exception: Andrei's Code Not Working in gui_utility.py")
-    #         print(e)
-    #         img_heatmap_processed = self.read_image()
-
-    #     # Make a PDF File
-    #     pdf_file_name = "Sample PDF.pdf"
-    #     pdf_texts = (self.pdf_texts_json['french'], self.pdf_texts_json['english'], self.pdf_texts_json['dutch'])
-    #     HD_Utility.create_pdf(("img_label.png", "Heatmap_processed.png"), pdf_texts, pdf_file_name)
-
-    #     #################### Server Uploading ###################
-
-    #     # Create File
-    #     file_name_in_drive = f'Analysis_{datetime.now().strftime("%d_%m_%Y_%H_%M_%S")}.jpg'
-    #     HD_Utility.pdf2jpg(pdf_file_name, file_name_in_drive)
-
-    #     # Upload The File To Google Drive
-    #     # file_id = self.google_drive_handler.upload_image(file_name_in_drive, file_name_in_drive, self.google_drive_handler.folder_id)
-    #     # url = self.google_drive_handler.get_file_url(file_id)
-
-    #     # Upload the JPG File To the Server
-    #     url = self.server_handler.upload_new_document(path_to_file=file_name_in_drive)
-    #     print(f"Uploaded File to: {url}")
-
-    #     # Create The QR Code
-    #     qr_code_img = HD_Utility.make_qr(data=url, file_name=f'qr.png')
-    #     print("Created QR Code")
-
-
-
-    #     #################### Creating Final Plots ###################
-    #     # Initialize Images before setting:
-    #     size = (400, 400)
-    #     img1 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
-    #     img2 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
-    #     img3 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
-
-
-    #     try:
-    #     # Cat three plots (img1, img2, qr)
-    #         img1 = HD_Utility.load_and_resize_image("img_label.png", size)
-    #         img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
-    #         #img3 = HD_Utility.load_and_resize_image('qr.png', (400,400))
-
-    #     except:
-    #         print("Exception in gui_utility: QR or Heatmap not found.")
-
-    #     # Merge Plots
-    #     new_img = HD_Utility.create_concatenated_image(img1, img2, img3)
-    #     final_plot = ImageTk.PhotoImage(new_img)
-
-    #     # Create a new window and configure label
-    #     new_window = tk.Toplevel(self.root)
-    #     label = tk.Label(new_window, image=final_plot)
-    #     label.image = final_plot  # keep a reference to the image
-    #     label.pack()
-    #     self.new_created_windows.append(new_window)
-
-    #     # Update The Image
-    #     final_plot = ImageTk.PhotoImage(new_img)
-    #     self.label.configure(image=final_plot)
-    #     self.label.image = final_plot
-
 
     def __open_video_window__(self):
         self.video_window = tk.Toplevel(self.root)
@@ -330,7 +229,10 @@ class GUI_Main_Page:
             # Send the Image to Andrei's Model
             img_heatmap_processed = back_end_run(img_label, scale,weather, other_arg)
             img_heatmap_processed.save("Heatmap_processed.png")
-            
+            #new_size = (300, 300)  # or (new_width, new_height)
+
+            # Resize the image
+            #img_heatmap_processed = img_heatmap_processed.resize(new_size)
             # Update The Image
             img_heatmap_processed = ImageTk.PhotoImage(img_heatmap_processed)
             self.label.configure(image=img_heatmap_processed)
@@ -364,6 +266,7 @@ class GUI_Main_Page:
         qr_code_img = HD_Utility.make_qr(data=url2, file_name=f'qr.png')
         print("Created QR Code")
         
+        #size = (300, 300)
         size = (700, 700)
         img1 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
         img3 = HD_Utility.load_and_resize_image("GUI/vub.png", size)

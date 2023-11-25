@@ -146,7 +146,7 @@ def create_image_jpg(citymap_img,heatmap_img,game,filename="grid.jpg"):
         # Put the VUB logo at the bottom left corner on top of the banner
         with Image(filename=VUB_logo) as img:
             img.resize(236, 65)
-            base.composite(img, left=0, top=canvas_height-65)
+            base.composite(img, left=0, top=canvas_height-130)
 
         base.save(filename=filename)
 
