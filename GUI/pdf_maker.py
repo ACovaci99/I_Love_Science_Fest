@@ -151,6 +151,6 @@ def create_image_jpg(citymap_img,heatmap_img,game,filename="grid.jpg"):
         base.save(filename=filename)
 
 #Test the layout for the game scenario with 4 images: the demo city, the demo heat map, the new city and the new heatmap
-create_image_jpg("result.jpg","Heatmap_processed.png",True,"grid_game.jpg")
-create_image_jpg("result.jpg","Heatmap_processed.png",False,"grid.jpg")
+#create_image_jpg("result.jpg","Heatmap_processed.png",True,"grid_game.jpg")
+#create_image_jpg("result.jpg","Heatmap_processed.png",False,"grid.jpg")
 

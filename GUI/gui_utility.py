@@ -35,9 +35,12 @@ class GUI_Main_Page:
         second_monitor = monitors[1]  # Index 1 because 0 is the first monitor
         resolution = str(second_monitor.width)+"x"+str(second_monitor.height)
     else:
+        second_monitor = monitors[0]  # Index 1 because 0 is the first monitor
+        resolution = str(second_monitor.width) + "x" + str(second_monitor.height)
         print("Second monitor not found.")
     ROOT_WINDOW_DIM = resolution
-    IMAGE_CANVAS_DIM = (1400, 700)
+    print(resolution)
+    IMAGE_CANVAS_DIM = (800,600)#(2000, 1500)
 
     def __init__(self, pdf_texts_json, server_handler = None):
 
@@ -97,7 +100,7 @@ class GUI_Main_Page:
 
         # Dropdown Frame 2:
         dropdown_frame2 = tk.Frame(self.root)
-        dropdown_frame2.pack(pady=10, padx=(200, 0), side=tk.LEFT)
+        dropdown_frame2.pack(pady=10, padx=(300, 0), side=tk.LEFT)
         
         # Create Label Field for Dropdown 2
         self.label_field2 = tk.Label(dropdown_frame2, text="Mode: ")
@@ -112,7 +115,7 @@ class GUI_Main_Page:
         
         # Dropdown Frame 3:
         dropdown_frame3 = tk.Frame(self.root)
-        dropdown_frame3.pack(pady=10, padx=(200, 0), side=tk.LEFT)
+        dropdown_frame3.pack(pady=10, padx=(300, 0), side=tk.LEFT) #padx(600,0)
         
         # Create Label Field for Dropdown 1
         self.label_field3 = tk.Label(dropdown_frame3, text="Choose Scenario: ")
@@ -126,7 +129,7 @@ class GUI_Main_Page:
         
         # Dropdown Frame 1:
         dropdown_frame1 = tk.Frame(self.root)
-        dropdown_frame1.pack(pady=10, padx=(200, 0), side=tk.LEFT)
+        dropdown_frame1.pack(pady=10, padx=(300, 0), side=tk.LEFT)
         
         # Create Label Field for Dropdown 1
         self.label_field1 = tk.Label(dropdown_frame1, text="Choose Scale: ")
@@ -169,9 +172,12 @@ class GUI_Main_Page:
         # Get New Image From Camera
         if self.video_capture.current_frame is not None:
             new_image = self.video_capture.current_frame_tk
+            #print(type(new_image))
         
 
         # Update The Image
+        #new_image = ImageTk.PhotoImage(Image.open("ideal_city/capture.png"))
+        #print(type(new_image))
         self.label.configure(image=new_image)
         self.label.image = new_image
 
@@ -221,7 +227,7 @@ class GUI_Main_Page:
         # Get Panel data
         #value1, value2 = drop_down2.get_selected_value()
         img_label = self.label.image
-        #img_label = ImageTk.getimage(self.read_image("ideal_city/border_ideal_demo_city.png"))
+        #img_label = ImageTk.getimage(self.read_image("ideal_city/capture.png"))
         img_label = ImageTk.getimage(img_label)
         img_label.save("img_label.png")
     
@@ -266,8 +272,8 @@ class GUI_Main_Page:
         qr_code_img = HD_Utility.make_qr(data=url2, file_name=f'qr.png')
         print("Created QR Code")
         
-        #size = (300, 300)
-        size = (700, 700)
+        size = (500, 500)
+        #size = (1000, 1000)
         img1 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
         img3 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
         img2 = HD_Utility.load_and_resize_image("GUI/vub.png", size)
@@ -275,7 +281,7 @@ class GUI_Main_Page:
         try:
         # Cat three plots (img1, img2, qr)
             img1 = HD_Utility.load_and_resize_image("img_label.png", size)
-            img3 = HD_Utility.load_and_resize_image('qr.png', (400,400))
+            img3 = HD_Utility.load_and_resize_image('qr.png', (300,300))
             img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
 
         except:
@@ -285,11 +291,11 @@ class GUI_Main_Page:
         game = str(self.drop_down2.get_selected_value())
         if game == 'a': # this is the regular game 
             img1 = HD_Utility.load_and_resize_image("ideal_city/ideal_city_heatmap.png", size)
-            img3 = HD_Utility.load_and_resize_image('qr.png', (400,400))
+            img3 = HD_Utility.load_and_resize_image('qr.png', (300,300))
             img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
         else:
             img1 = HD_Utility.load_and_resize_image("img_label.png", size)
-            img3 = HD_Utility.load_and_resize_image('qr.png', (200,200))
+            img3 = HD_Utility.load_and_resize_image('qr.png', (300,300))
             img2 = HD_Utility.load_and_resize_image("Heatmap_processed.png", size)
 
 

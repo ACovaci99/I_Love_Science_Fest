@@ -277,4 +277,4 @@ class VideoWindow:
             print("[Camera Not Detected!]")
             self.update_camera_port()
 
-        self.root.after(10, self.update_frame)  # refresh frame every 10 ms
+        self.root.after(1000, self.update_frame)  # refresh frame every 10 ms
